@@ -76,6 +76,7 @@ lima --single-side  -j 128 --peek-guess  --ccs --min-score 26 \
 ${bam} \
 ${barcode1} \
 demux_i7/${pair_id}.bam
+mv demux_i7/${pair_id}.lima.counts demux_i7/i7_${pair_id}.lima.counts 
 
 
 mkdir -p demux_i5
@@ -85,6 +86,7 @@ lima --single-side  -j 128 --peek-guess  --ccs --min-score 26 \
 demux_i7/${pair_id}.unbarcoded.bam \
 ${barcode2} \
 demux_i5/${pair_id}.bam
+mv demux_i5/${pair_id}.lima.counts demux_i5/i5_${pair_id}.lima.counts 
 
 """
 }
@@ -197,15 +199,18 @@ process bbduk_stats {
 
 container 'rocker/verse:4.3.1'
 
-publishDir path: 'bbduk_summary', pattern: '*.csv', mode: 'copy'
+publishDir path: 'bbduk_summary', pattern: '*.xlsx', mode: 'copy'
 
 input:
   tuple val(pair_id),  path (stat) from stat_ch
-  path (adapter) from adapter_info
+  each path (adapter) from adapter_info
+  tuple val(pair_id), path (i7_lima ) from  i7_lima_count
+  tuple val(pair_id), path (i5_lima ) from  i5_lima_count
+  tuple val(pair_id), path (bam_count ) from  bam_count_ch
 
 
 output:
-  path("*.csv")
+  path("*.xlsx")
 
 """
 create_bbduk_summary.R   $pair_id 
