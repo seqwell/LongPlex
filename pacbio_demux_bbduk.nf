@@ -192,8 +192,8 @@ paste a b c > adapter_info
 
 
 
-stat_ch = stats
-          .groupTuple(by: 0)        
+stat_ch = stats.mix( i7_lima_count).mix(i5_lima_count).mix(bam_count_ch)
+          .groupTuple(by: 0)       
 
 process bbduk_stats { 
 
@@ -204,9 +204,7 @@ publishDir path: 'bbduk_summary', pattern: '*.xlsx', mode: 'copy'
 input:
   tuple val(pair_id),  path (stat) from stat_ch
   each path (adapter) from adapter_info
-  tuple val(pair_id), path (i7_lima ) from  i7_lima_count
-  tuple val(pair_id), path (i5_lima ) from  i5_lima_count
-  tuple val(pair_id), path (bam_count ) from  bam_count_ch
+  
 
 
 output:
