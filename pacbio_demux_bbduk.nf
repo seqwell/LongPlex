@@ -159,10 +159,10 @@ output:
 
 """
 
-cat $barcode1 $barcode2 | paste - - | cut -f2 | tr '\n' ',' > barcode.txt
+cat $barcode1 $barcode2  > barcode.fa
 bbduk.sh -Xmx2g \
 in=$fq \
-literal=\$(cat barcode.txt)  \
+ref=barcode.fa  \
 out=${pair_id}.${well_id}.unmatched.fastq.gz \
 outm=${pair_id}.${well_id}.matched.fastq.gz  \
 k=44 \
@@ -178,10 +178,9 @@ mv ${pair_id}.${well_id}.matched.fastq.gz ${pair_id}.${well_id}.failFilter.fastq
 fi
 
 
-cat $barcode1 $barcode2 | paste - - > adapter_2_col.txt
-cat -n adapter_2_col.txt | awk '{print \$1}' > a
-cat -n adapter_2_col.txt | awk '{print \$2}' | cut -d_ -f3,4 | cut -d_ -f1 > b
-cat -n adapter_2_col.txt | awk '{print \$2}' | cut -d_ -f3,4 | cut -d_ -f2 > c
+cat $barcode1 $barcode2 | grep '>' | sed 's/>//g'  > a
+cat  a | cut -d_ -f3,4 | cut -d_ -f1 > b
+cat  a | cut -d_ -f3,4 | cut -d_ -f2 > c
 paste a b c > adapter_info
 
 
