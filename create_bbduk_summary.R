@@ -7,7 +7,7 @@ library(openxlsx)
 
 args = commandArgs(trailingOnly=TRUE)
 
-output_name = args[[1]]
+pair_id = args[[1]]
 
 
 index_for_barcode = readr::read_table("adapter_info", col_names = F)
