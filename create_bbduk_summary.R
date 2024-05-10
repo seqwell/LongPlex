@@ -113,32 +113,40 @@ all = readr::read_tsv( count_file, col_names = F)
 df= dplyr::bind_rows( i7_lima, i5_lima) %>% 
   dplyr::select(IdxFirstNamed, Counts )
 
-df
 
-names(all) = c("IdxFirstNamed", "Counts")
-all$IdxFirstNamed[[1]] = "total"
+df = df %>% 
+  dplyr::mutate( index = stringr::str_extract_all(IdxFirstNamed, "_P[5,7]", simplify = T) ) %>% 
+  dplyr::mutate( index = stringr::str_replace_all(index, "_", "")) %>% 
+  dplyr::mutate( barcode = stringr::str_replace_all(IdxFirstNamed, "_P[5,7]", "" )) %>% 
+  dplyr::mutate( barcode = as.character(barcode)) %>% 
+  dplyr::mutate( sample = stringr::str_extract_all(IdxFirstNamed, "[A-H][0-9]{2}",  simplify = T )) %>% 
+  dplyr::mutate( sample = as.character(sample)) %>% 
+  dplyr::select( -IdxFirstNamed) %>% 
+  tidyr::spread( index, Counts)
 
-
-
-unbarcode = all$Counts-sum(df$Counts)
-unbarcode_pct = 100*unbarcode/all$Counts
-unbarcode_df = data.frame( IdxFirstNamed = c("unbarcoded", "unbarcoded_pct"), 
-                           Counts = c(unbarcode,unbarcode_pct)  , 
-                           stringsAsFactors = F )
-
-
-df_report = dplyr::bind_rows(df, all,unbarcode_df)
-
-df_report$Counts[-1] = round(df_report$Counts[-1], 0)
-
-#readr::write_csv(bbduk_report, paste0(output_name, "_BBDuk_detailed_report.csv"))
-#readr::write_csv(final_report, paste0(output_name, "_BBDuk_summary_report.csv"))
+df_report = df %>% 
+  dplyr::inner_join(bbduk_report, by = "sample") %>% 
+  dplyr::mutate( reads_passFilter = total_reads - sum_all_barcode ) %>% 
+  dplyr::select( -sum_all_barcode, -sum_other_barcode) %>% 
+  dplyr::rename( total_demux_reads = total_reads)
 
 
-#define sheet names for each data frame
-dataset_names <- list('lima_report' = df_report,
-                      'bbduk_detail' = bbduk_report,
-                      'bbduk_summary' = final_report)
 
-#export each data frame to separate sheets in same Excel file
-openxlsx::write.xlsx(dataset_names, file = paste0( pair_id, "_demux_report.xlsx"))
+sum_total_demux = sum(df_report$total_demux_reads)
+sum_total_pssFilter = sum(df_report$reads_passFilter)
+total_reads_before_demux = all$X2
+demux_rate = round(100*(sum_total_demux/total_reads_before_demux),4)
+pass_rate = round(100*(sum_total_pssFilter/sum_total_demux),4)
+
+sum_info =  data.frame( barcode = c("###", "###", "###"),
+                        sample = c("total_reads", "total_reads_before_demux_and_filter", "pct_demux_and_fassFilter"),
+                        total_demux_reads = c(sum_total_demux, total_reads_before_demux,   demux_rate  ), 
+                        reads_passFilter = c(sum_total_pssFilter,  sum_total_demux,  pass_rate ),
+                        stringsAsFactors = F )
+
+
+
+df_report_end = dplyr::bind_rows(df_report, sum_info)
+
+
+readr::write_csv( df_report_end, paste0(pair_id, "_demux_report.csv") )
