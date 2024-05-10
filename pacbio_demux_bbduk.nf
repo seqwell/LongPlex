@@ -198,7 +198,7 @@ process bbduk_stats {
 
 container 'rocker/verse:4.3.1'
 
-publishDir path: 'bbduk_summary', pattern: '*.xlsx', mode: 'copy'
+publishDir path: 'bbduk_summary', pattern: '*.csv', mode: 'copy'
 
 input:
   tuple val(pair_id),  path (stat) from stat_ch
@@ -207,7 +207,7 @@ input:
 
 
 output:
-  path("*.xlsx")
+  path("*.csv")
 
 """
 create_bbduk_summary.R   $pair_id 
