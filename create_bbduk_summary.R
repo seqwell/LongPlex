@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
 library(dplyr)
 library(purrr)
-install.packages("openxlsx")
-library(openxlsx)
+
 
 
 args = commandArgs(trailingOnly=TRUE)
