@@ -165,7 +165,7 @@ in=$fq \
 ref=barcode.fa  \
 out=${pair_id}.${well_id}.unmatched.fastq.gz \
 outm=${pair_id}.${well_id}.matched.fastq.gz  \
-k=44 \
+k=43 \
 hdist=1 \
 stats=${pair_id}.${well_id}.stats.txt  \
 2>>log
