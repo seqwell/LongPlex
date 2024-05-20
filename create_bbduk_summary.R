@@ -121,9 +121,9 @@ df= dplyr::bind_rows( i7_i5_lima, i7_lima, i5_lima) %>%
 
 
 df = df %>% 
-  dplyr::mutate( index = stringr::str_extract_all(IdxFirstNamed, "_P[5,7]", simplify = T) ) %>% 
+  dplyr::mutate( index = stringr::str_extract_all(IdxFirstNamed, "_P[5,7]{1,}", simplify = T) ) %>% 
   dplyr::mutate( index = stringr::str_replace_all(index, "_", "")) %>% 
-  dplyr::mutate( barcode = stringr::str_replace_all(IdxFirstNamed, "_P[5,7]", "" )) %>% 
+  dplyr::mutate( barcode = stringr::str_replace_all(IdxFirstNamed, "_P[5,7]{1,}", "" )) %>% 
   dplyr::mutate( barcode = as.character(barcode)) %>% 
   dplyr::mutate( sample = stringr::str_extract_all(IdxFirstNamed, "[A-H][0-9]{2}",  simplify = T )) %>% 
   dplyr::mutate( sample = as.character(sample)) %>% 
