@@ -78,30 +78,37 @@ get_counts = function(path){
 file_list = list.files( full.names = T, pattern = ".stats.txt")
 
 
-bbduk_report = purrr::map_dfr( file_list, get_counts)
+bbduk_report0 = purrr::map_dfr( file_list, get_counts)
+bbduk_report = bbduk_report0 %>% 
+  dplyr::group_by(sample) %>% 
+  dplyr::summarise( sum_all_barcode =sum(sum_all_barcode, na.rm =T),
+                    sum_other_barcode = sum(sum_other_barcode, na.rm =T))
 
 
 
-all_reads = sum(bbduk_report$total_reads, na.rm = T)
+
+
 other_barcode = sum(bbduk_report$sum_other_barcode, na.rm = T)
 all_barcode = sum(bbduk_report$sum_all_barcode, na.rm = T)
 
-final_report = data.frame( all_reads_count = all_reads,
-                           reads_with_barcode = all_barcode,
+final_report = data.frame( reads_with_barcode = all_barcode,
                            reads_with_other_barcode = other_barcode, stringsAsFactors = F)
 
-final_report = final_report %>%
-  dplyr::mutate( ratio_reads_with_barcode = reads_with_barcode/all_reads_count,
-                 ratio_other_barcode = reads_with_other_barcode/reads_with_barcode,
-                 ratio_reads_with_other_barcode = reads_with_other_barcode/all_reads_count)
+fail_filter_total = sum(bbduk_report$sum_all_barcode)
 
-final_report
-bbduk_report
+lima_i7_i5_file = list.files( full.names = T, pattern = paste0("i7_i5_", pair_id) )
 
-lima_i5_file = list.files( full.names = T, pattern = "i5")
+
+i7_i5_lima = readr::read_tsv( lima_i7_i5_file )
+names(i7_i5_lima)
+i7_i5_lima = i7_i5_lima %>% 
+  dplyr::mutate(IdxFirstNamed = paste0(IdxCombinedNamed,"5") ) 
+
+
+lima_i5_file = list.files( full.names = T, pattern = paste0("^i5_", pair_id))
 i5_lima = readr::read_tsv( lima_i5_file )
 
-lima_i7_file = list.files( full.names = T, pattern = "i7")
+lima_i7_file = list.files( full.names = T, pattern = paste0("i7_", pair_id) )
 i7_lima = readr::read_tsv( lima_i7_file )
 names(i7_lima)
 
@@ -109,7 +116,7 @@ count_file = list.files( full.names = T, pattern = "hifi.reads.count")
 all = readr::read_tsv( count_file, col_names = F)
 
 
-df= dplyr::bind_rows( i7_lima, i5_lima) %>% 
+df= dplyr::bind_rows( i7_i5_lima, i7_lima, i5_lima) %>% 
   dplyr::select(IdxFirstNamed, Counts )
 
 
@@ -121,7 +128,9 @@ df = df %>%
   dplyr::mutate( sample = stringr::str_extract_all(IdxFirstNamed, "[A-H][0-9]{2}",  simplify = T )) %>% 
   dplyr::mutate( sample = as.character(sample)) %>% 
   dplyr::select( -IdxFirstNamed) %>% 
-  tidyr::spread( index, Counts)
+  tidyr::spread( index, Counts) %>% 
+  dplyr::mutate( total_reads = P5 + P7 + P75) %>%
+  dplyr::rename( P7_and_P5 = P75)
 
 df_report = df %>% 
   dplyr::inner_join(bbduk_report, by = "sample") %>% 
@@ -133,17 +142,23 @@ df_report = df %>%
 
 sum_total_demux = sum(df_report$total_demux_reads)
 sum_total_pssFilter = sum(df_report$reads_passFilter)
+sum_total_demux = sum(df_report$total_demux_reads)
 total_reads_before_demux = all$X2
 demux_rate = round(100*(sum_total_demux/total_reads_before_demux),4)
 pass_rate = round(100*(sum_total_pssFilter/sum_total_demux),4)
 
+p5_total = sum(df_report$P5)
+p7_total = sum(df_report$P7)
+p57_total = sum(df_report$P7_and_P5)
+
 sum_info =  data.frame( barcode = c("###", "###", "###"),
                         sample = c("total_reads", "total_reads_before_demux_and_filter", "pct_demux_and_fassFilter"),
+                        P5=c(p5_total, NA, NA), 
+                        P7=c(p7_total, NA, NA),
+                        P75 = c(p57_total, NA, NA),
                         total_demux_reads = c(sum_total_demux, total_reads_before_demux,   demux_rate  ), 
                         reads_passFilter = c(sum_total_pssFilter,  sum_total_demux,  pass_rate ),
                         stringsAsFactors = F )
-
-
 
 df_report_end = dplyr::bind_rows(df_report, sum_info)
 
