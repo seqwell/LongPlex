@@ -60,20 +60,37 @@ each path(barcode2) from barcode_fa_i5_1
 output:
 path ('demux_i7/*')
 path ('demux_i5/*')
+path ('demux_i7_i5/*')
 tuple val(pair_id), path ('demux_i7/*--*.bam') into i7_bam
 tuple val(pair_id), path ('demux_i5/*--*.bam') into i5_bam
+tuple val(pair_id), path ('demux_i7_i5/*--*.bam') into i7_i5_bam
 tuple val(pair_id), path ("demux_i7/*lima.counts") into i7_lima_count
 tuple val(pair_id), path ("demux_i5/*lima.counts") into i5_lima_count
+tuple val(pair_id), path ("demux_i7_i5/*lima.counts") into i7_i5_lima_count
 
 
 
 """
+
+cat $barcode1 $barcode2 | paste - -  | sort |  tr '\t' '\n' > barcode_neighbor.fa
+
+mkdir -p demux_i7_i5
+lima --neighbors  -j 128 --peek-guess  --ccs --min-score 26 \
+--store-unbarcoded \
+--split-named --log-level INFO \
+--log-file demux_i7_i5/${pair_id}.lima.log \
+${bam} \
+barcode_neighbor.fa \
+demux_i7_i5/${pair_id}.bam
+mv demux_i7_i5/${pair_id}.lima.counts demux_i7_i5/i7_i5_${pair_id}.lima.counts 
+
+
 mkdir -p demux_i7
 lima --single-side  -j 128 --peek-guess  --ccs --min-score 26 \
 --store-unbarcoded \
 --split-named --log-level INFO \
 --log-file demux_i7/${pair_id}.lima.log \
-${bam} \
+demux_i7_i5/${pair_id}.unbarcoded.bam \
 ${barcode1} \
 demux_i7/${pair_id}.bam
 mv demux_i7/${pair_id}.lima.counts demux_i7/i7_${pair_id}.lima.counts 
@@ -91,11 +108,20 @@ mv demux_i5/${pair_id}.lima.counts demux_i5/i5_${pair_id}.lima.counts
 """
 }
 
+//bc1012.seqwell_UDI1_G02_P5--seqwell_UDI1_G02_P7.bam
 //bc1003.seqwell_UDI3_H12_P7--seqwell_UDI3_H12_P7.bam
 //bc1003.seqwell_UDI3_H11_P5--seqwell_UDI3_H11_P5.bam
 
 //i7_bam.view()
 //i5_bam.view()
+
+i7_i5_bam_modified = i7_i5_bam
+                      .map{it -> it[1]}
+                      .flatten()
+                      .map{ it -> tuple(it.baseName.tokenize('--')[0].tokenize('.')[0],
+                                        it.baseName.tokenize('--')[0].tokenize('_')[2],
+                                        it
+                                    )}
 
 
 i7_bam_modified = i7_bam
@@ -115,14 +141,15 @@ i5_bam_modified = i5_bam
                                     it
                                     )}
                                         
-i7_i5_bam = i7_bam_modified
+i7_i5_bam = i7_i5_bam_modified
+            .join(i7_bam_modified, by: [0,1])
             .join(i5_bam_modified, by: [0,1])
 
 process merge_bam_to_fq {
 
 container 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_1'
 input:
-  tuple val(pair_id), val(well_id), path (bam_i7), path(bam_i5) from i7_i5_bam
+  tuple val(pair_id), val(well_id), path(bam_i7_i5), path (bam_i7), path(bam_i5) from i7_i5_bam
   
 
 output:
@@ -130,7 +157,7 @@ output:
   
 
 """
-samtools  merge ${pair_id}.${well_id}.bam $bam_i7 $bam_i5
+samtools  merge ${pair_id}.${well_id}.bam $bam_i7_i5 $bam_i7 $bam_i5
 samtools fastq ${pair_id}.${well_id}.bam | bgzip -c > ${pair_id}.${well_id}.fastq.gz
 
 """
@@ -159,24 +186,44 @@ output:
 
 """
 
-cat $barcode1 $barcode2  > barcode.fa
+#filter for i7
+cat $barcode1 | paste - -  | tr '\t' '\n' > barcode1.fa
 bbduk.sh -Xmx2g \
 in=$fq \
-ref=barcode.fa  \
-out=${pair_id}.${well_id}.unmatched.fastq.gz \
-outm=${pair_id}.${well_id}.matched.fastq.gz  \
+ref=barcode1.fa  \
+out=${pair_id}.${well_id}.unmatched.fastq \
+outm=${pair_id}.${well_id}.matched.fastq  \
 k=44 \
 hdist=1 \
-stats=${pair_id}.${well_id}.stats.txt  \
+stats=i7.${pair_id}.${well_id}.stats.txt  \
+2>>log
+
+if [ -f ${pair_id}.${well_id}.unmatched.fastq ]; then
+mv ${pair_id}.${well_id}.unmatched.fastq i7.${pair_id}.${well_id}.passFilter.fastq
+fi
+if [ -f ${pair_id}.${well_id}.matched.fastq.gz ]; then
+mv ${pair_id}.${well_id}.matched.fastq i7.${pair_id}.${well_id}.failFilter.fastq
+fi
+
+
+#filter for i5
+cat $barcode2 | paste - -   | tr '\t' '\n' > barcode2.fa
+bbduk.sh -Xmx2g \
+in=i7.${pair_id}.${well_id}.passFilter.fastq.gz \
+ref=barcode2.fa  \
+out=${pair_id}.${well_id}.unmatched.fastq.gz \
+outm=${pair_id}.${well_id}.matched.fastq.gz  \
+k=43 \
+hdist=1 \
+stats=i5.${pair_id}.${well_id}.stats.txt  \
 2>>log
 
 if [ -f ${pair_id}.${well_id}.unmatched.fastq.gz ]; then
-mv ${pair_id}.${well_id}.unmatched.fastq.gz ${pair_id}.${well_id}.passFilter.fastq.gz
+mv ${pair_id}.${well_id}.unmatched.fastq.gz final.${pair_id}.${well_id}.passFilter.fastq.gz
 fi
 if [ -f ${pair_id}.${well_id}.matched.fastq.gz ]; then
-mv ${pair_id}.${well_id}.matched.fastq.gz ${pair_id}.${well_id}.failFilter.fastq.gz
+mv ${pair_id}.${well_id}.matched.fastq.gz i5.${pair_id}.${well_id}.failFilter.fastq.gz
 fi
-
 
 cat $barcode1 $barcode2 | grep '>' | sed 's/>//g'  > a
 cat  a | cut -d_ -f3,4 | cut -d_ -f1 > b
@@ -191,8 +238,9 @@ paste a b c > adapter_info
 
 
 
-stat_ch = stats.mix( i7_lima_count).mix(i5_lima_count).mix(bam_count_ch)
-          .groupTuple(by: 0)       
+stat_ch = stats.mix( i7_lima_count).mix(i5_lima_count).mix(i7_i5_lima_count).mix(bam_count_ch)
+          .groupTuple(by: 0)   
+          .map {it -> tuple (it[0], it[1].flatten())}
 
 process bbduk_stats { 
 
