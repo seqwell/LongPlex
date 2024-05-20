@@ -155,7 +155,7 @@ sum_info =  data.frame( barcode = c("###", "###", "###"),
                         sample = c("total_reads", "total_reads_before_demux_and_filter", "pct_demux_and_fassFilter"),
                         P5=c(p5_total, NA, NA), 
                         P7=c(p7_total, NA, NA),
-                        P75 = c(p57_total, NA, NA),
+                        P7_and_P5 = c(p57_total, NA, NA),
                         total_demux_reads = c(sum_total_demux, total_reads_before_demux,   demux_rate  ), 
                         reads_passFilter = c(sum_total_pssFilter,  sum_total_demux,  pass_rate ),
                         stringsAsFactors = F )
