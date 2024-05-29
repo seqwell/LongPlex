@@ -147,20 +147,42 @@ total_reads_before_demux = all$X2
 demux_rate = round(100*(sum_total_demux/total_reads_before_demux),4)
 pass_rate = round(100*(sum_total_pssFilter/sum_total_demux),4)
 
+total_reads_fail_demux=total_reads_before_demux -sum_total_demux
+fail_demux_rate = round(100 - demux_rate,4)
+
+total_reads_failFilter = sum_total_demux - sum_total_pssFilter
+fail_filter_rate = round(100 - pass_rate,4)
+
 p5_total = sum(df_report$P5)
 p7_total = sum(df_report$P7)
 p57_total = sum(df_report$P7_and_P5)
 
-sum_info =  data.frame( barcode = c("###", "###", "###"),
-                        sample = c("total_reads", "total_reads_before_demux_and_filter", "pct_demux_and_fassFilter"),
-                        P5=c(p5_total, NA, NA), 
-                        P7=c(p7_total, NA, NA),
-                        P7_and_P5 = c(p57_total, NA, NA),
-                        total_demux_reads = c(sum_total_demux, total_reads_before_demux,   demux_rate  ), 
-                        reads_passFilter = c(sum_total_pssFilter,  sum_total_demux,  pass_rate ),
+sum_info =  data.frame( barcode = c("###", "###", "###", "###", "###"),
+                        sample = c("total_reads", 
+                                   "total_reads_before_demux/total_reads_before_filter",
+                                   "reads_fail_demux/reads_failFilter",
+                                   "pct_demux/pct_fassFilter",
+                                   "pct_fail_demux/pct_failFilter"),
+                        P5=c(p5_total, NA, NA, NA, NA), 
+                        P7=c(p7_total, NA, NA, NA, NA),
+                        P7_and_P5 = c(p57_total, NA, NA, NA, NA),
+                        total_demux_reads = c(sum_total_demux, 
+                                              total_reads_before_demux, 
+                                              total_reads_fail_demux,  
+                                              demux_rate , 
+                                              fail_demux_rate ), 
+                        reads_passFilter = c(sum_total_pssFilter,
+                                             sum_total_demux, 
+                                             total_reads_failFilter,
+                                             pass_rate,
+                                             fail_filter_rate),
                         stringsAsFactors = F )
 
+
 df_report_end = dplyr::bind_rows(df_report, sum_info)
+
+df_report_end = df_report_end %>% 
+  dplyr::select( barcode, sample, P7_and_P5, P7, P5, total_demux_reads, reads_passFilter )
 
 
 readr::write_csv( df_report_end, paste0(pair_id, "_demux_report.csv") )
