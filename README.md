@@ -1,7 +1,13 @@
 
 # nextflow pipeline for pacbio lima bbduk demux
 
-This is the work flow in nextflow pipeline using lima and bbduk to do demux on pacbio data for seqWell longplex kit. The output from this pipeline has lima output, bbduk output, and also a bbduk summary.
+This is the work flow in nextflow pipeline using lima and bbduk to do demux on pacbio data for seqWell longplex kit. The workflow is as shown in the image below. The workflow starts with hifi bam file, then a three-step lima process is conducted. Each lima process will clip off the corresponding barcode. 
+ - lima demulitplex using neighbor option, get reads with both i7 and i5 seqWell barcode. Keep unbarcoded reads which goes to the next lima process.
+ - lima demultiplex using i7 barcode on the unbarcoded reads from the previous lima process. Keep unbarcoded reads which goes to the next lima process.
+ - lima demultiplex using i5 barcode on the unbarcoded reads from the previous lima process.
+
+After the three-step lima process, bam files from these three stpes are merged from each sample and converted to fastq format. BBduk is used to filter out reads that have extra barcode left on the merged fastq files.
+The output from this pipeline has lima output, BBduk output, and also a demultiplex summary from lima and BBduk process.
 
 ![workflow](./assets/workflow.png)
 
