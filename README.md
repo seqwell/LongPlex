@@ -38,7 +38,7 @@ $ tree
 └── nextflow.sh
 ```
 The pipeline can be run using the scripts in the nextflow.sh script, run as `bash nextflow.sh`.
-The required inputs are hifi bam files, and seqWell LongPlex barcode.
+The required inputs are hifi bam files, and seqWell LongPlex barcode. The seqWell barcodes are in the barcodes folder. For early access users, please use barcode set3. Please use barcode set1 if you bought the kits after the launch.
 
 ```
 #!/bin/bash
