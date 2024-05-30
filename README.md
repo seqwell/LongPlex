@@ -6,7 +6,7 @@ This is the work flow in nextflow to do demultiplex on pacbio data for seqWell l
  - lima demultiplex using i7 barcode on the unbarcoded reads from the previous lima process. Keep unbarcoded reads which goes to the next lima process.
  - lima demultiplex using i5 barcode on the unbarcoded reads from the previous lima process.
 
-After the three-step lima process, bam files from these three stpes are merged from each sample and converted to fastq format. BBduk is used to filter out reads that have extra barcode left on the merged fastq files.
+After the three-step lima process, bam files from these three stpes are merged from each sample and converted to fastq format. BBDuk is used to filter out reads that have extra barcode left on the merged fastq files.
 The output from this pipeline has lima output, BBduk output, and also a demultiplex summary from lima and BBduk process.
 
 ![workflow](./assets/workflow.png)
