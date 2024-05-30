@@ -1,5 +1,5 @@
 
-# nextflow pipeline for demultiplex using seqWell longPlex kit
+# seqWell longPlex kit demultiplex nextflow pipeline
 
 This is the work flow in nextflow pipeline using lima and bbduk to do demux on pacbio data for seqWell longplex kit. The workflow is as shown in the image below. The workflow starts with hifi bam file, then a three-step lima process is conducted. Each lima process will clip off the corresponding barcode. 
  - lima demulitplex using neighbor option, get reads with both i7 and i5 seqWell barcode. Keep unbarcoded reads which goes to the next lima process.
