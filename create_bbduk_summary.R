@@ -129,8 +129,11 @@ df = df %>%
   dplyr::mutate( sample = as.character(sample)) %>% 
   dplyr::select( -IdxFirstNamed) %>% 
   tidyr::spread( index, Counts) %>% 
+  dplyr::mutate( P5 = ifelse(is.na(P5),0, P5)) %>%
+  dplyr::mutate( P7 = ifelse(is.na(P7),0, P7) ) %>%
+  dplyr::mutate( P75 = ifelse(is.na(P75),0, P75)) %>%
   dplyr::mutate( total_reads = P5 + P7 + P75) %>%
-  dplyr::rename( P7_and_P5 = P75)
+  dplyr::rename( P7_and_P5 = P75) 
 
 df_report = df %>% 
   dplyr::inner_join(bbduk_report, by = "sample") %>% 
