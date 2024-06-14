@@ -3,8 +3,8 @@
 
 
 params.samples = "*.bam"
-params.barcodes_i7 = "full_set3_i7_shorter_barcodes.fa"
-params.barcodes_i5 = "full_set3_i5_shorter_barcodes.fa"
+params.barcodes_i7 = "LongPlex_set3_i7_trimmed_adapters.fa"
+params.barcodes_i5 = "LongPlex_set3_i5_trimmed_adapters.fa"
 
 
 (bam_ch_1, bam_ch_2, bam_ch_3 ) = Channel
