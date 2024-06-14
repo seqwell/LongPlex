@@ -13,7 +13,7 @@ The output from this pipeline has lima output, BBDuk output, and also a demultip
 
 ## Hifi bam file name requirements: 
 For the hifi bam file name, it requires pacbio barcode info (for example bc1003) in the third string separated by .
-For example, `SEQW102-002-01.hifi_reads.bc1003.bam` is an acceptable bam file name. `bc1003` is used as a key for this hifi bam file in the pipeline. If you have bam file name different from this pattern, please rename the file as the code is using the pattern to create lima produced files.  Please avoid having underline(_) in the file name, you can have dash (-) in the file name.
+For example, `SEQW102-002-01.hifi_reads.bc1003.bam` is an acceptable bam file name. `bc1003` is used as a key for this hifi bam file in the pipeline. If you have bam file name different from this pattern, please rename the file as the code is using the pattern to create lima produced files.  Please avoid having underline(_) in the key, you can have dash (-) in the key.
 
 ## Docker containers used in this pipeline:
  - *lima*: quay.io/biocontainers/lima:2.7.1--h9ee0642_0
