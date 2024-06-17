@@ -1,0 +1,2 @@
+sample_ID,sample_path,i7_barcode,i5_barcode
+bc1015,s3://seqwell-projects/customer/hifi_reads.bc1015_BAK8B_OA.bam,barcode/LongPlex_set3_i7_trimmed_adapters.fa,barcode/LongPlex_set3_i5_trimmed_adapters.fa
