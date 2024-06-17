@@ -58,8 +58,8 @@ The required inputs are *samplesheet*.
 samplesheet=samplesheet/samplesheet.csv
 
 nextflow run \
-nextflow-pacbio-demux-bbduk/pacbio_demux_bbduk.nf \
--c nextflow-pacbio-demux-bbduk/nextflow.config \
+nextflow-pacbio-demux-bbduk-summary/pacbio_demux_bbduk.nf \
+-c nextflow-pacbio-demux-bbduk-summary/nextflow.config \
 --samplesheet $samplesheet \
 -bg -resume
 
