@@ -105,10 +105,9 @@ i7_i5_lima = i7_i5_lima %>%
   dplyr::mutate(IdxFirstNamed = paste0(IdxCombinedNamed,"5") ) 
 
 
-lima_i5_file = list.files( full.names = T, pattern = paste0("^i5_", pair_id))
-i5_lima = readr::read_tsv( lima_i5_file )
 
-lima_i7_file = list.files( full.names = T, pattern = paste0("i7_", pair_id) )
+
+lima_i7_file = list.files( full.names = T, pattern = paste0("i7_5_", pair_id) )
 i7_lima = readr::read_tsv( lima_i7_file )
 names(i7_lima)
 
@@ -116,7 +115,7 @@ count_file = list.files( full.names = T, pattern = "hifi.reads.count")
 all = readr::read_tsv( count_file, col_names = F)
 
 
-df= dplyr::bind_rows( i7_i5_lima, i7_lima, i5_lima) %>% 
+df= dplyr::bind_rows( i7_i5_lima, i7_lima) %>% 
   dplyr::select(IdxFirstNamed, Counts )
 
 
@@ -132,8 +131,8 @@ df = df %>%
   dplyr::mutate( P5 = ifelse(is.na(P5),0, P5)) %>%
   dplyr::mutate( P7 = ifelse(is.na(P7),0, P7) ) %>%
   dplyr::mutate( P75 = ifelse(is.na(P75),0, P75)) %>%
-  dplyr::mutate( total_reads = P5 + P7 + P75) %>%
-  dplyr::rename( P7_and_P5 = P75) 
+  dplyr::mutate( total_reads = P5+ P7+P75) %>% 
+  dplyr::rename( P7_and_P5 = P75 )
 
 df_report = df %>% 
   dplyr::inner_join(bbduk_report, by = "sample") %>% 
