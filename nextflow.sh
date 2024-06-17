@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-samplesheet="samplesheet.csv"
+samplesheet="samplesheet/samplesheet.csv"
 
 
 nextflow run \
