@@ -2,7 +2,7 @@
 
 
 
-params.samplesheet = "sample_sheet.csv"
+params.samplesheet = "samplesheet.csv"
 
 
 samples =Channel
