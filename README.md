@@ -14,7 +14,7 @@ This is the work flow in nextflow to do demultiplex on pacbio data for seqWell l
 After the two-step lima process, bam files from these two stpes are merged from each sample and converted to fastq format. BBDuk is used to filter out reads that have extra barcode left on the merged fastq files.
 The output from this pipeline has lima output, BBDuk output, and also a demultiplex summary from lima and BBDuk process.
 
-![workflow](./assets/demux_workflow.png)
+![Fig1. demultiplex workflow](./assets/demux_workflow.png)
 
 
 
@@ -41,7 +41,6 @@ $ tree
 │   ├── LongPlex_set3_i5_trimmed_adapters.fa
 │   └── LongPlex_set3_i7_trimmed_adapters.fa
 ├── nextflow-pacbio-demux-bbduk-summary
-│   ├── README
 │   ├── bin
 │   │   └── create_bbduk_summary.R
 │   ├── nextflow.config
