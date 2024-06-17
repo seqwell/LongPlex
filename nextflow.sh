@@ -1,15 +1,11 @@
 #!/bin/bash
 
 
-samples=*.bam
-barcodes_i7=LongPlex_set3_i7_trimmed_adapters.fa
-barcodes_i5=LongPlex_set3_i5_trimmed_adapters.fa
+samplesheet="samplesheet.csv"
 
 
 nextflow run \
-nextflow-pacbio-demux-bbduk/pacbio_demux_bbduk.nf \
--c nextflow-pacbio-demux-bbduk/nextflow.config \
---samples $samples \
---barcodes_i7 $barcodes_i7 \
---barcodes_i5 $barcodes_i5 \
+nextflow-pacbio-demux-bbduk-summary/pacbio_demux_bbduk_DSL2.nf \
+-c nextflow-pacbio-demux-bbduk-summary/nextflow.config \
+--samplesheet $samplesheet \
 -bg -resume
