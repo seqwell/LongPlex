@@ -69,6 +69,6 @@ nextflow-pacbio-demux-bbduk-summary/pacbio_demux_bbduk.nf \
 ## samplesheet requirement: 
 The samplesheet is in csv format. There are four columns for the samplesheet: sample_ID, sample_path, i7_barcode and i5_barcode.
 
- - *sample_ID*: Please avoid having underline(_) and dash (-) and dot(.) in the sample_ID.
+ - *sample_ID*: You can have only letters and numbers in sampe_ID. Please avoid having underline(_) and dash (-) and dot(.) in the sample_ID.
  - *sample_path*: The sample_path can be local or a link to s3 bucket. If it is a link to s3 bucket, please make sure to fill in the correct credentials in the nextflow.config file.
  - *i7_barcode, i5_barcode*: The barcodes are in the barcode folder. For early access users, please use barcode set3. Please use barcode set1 if you bought the kits after the launch.
