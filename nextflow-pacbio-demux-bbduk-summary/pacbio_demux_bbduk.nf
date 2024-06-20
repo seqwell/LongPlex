@@ -241,7 +241,7 @@ both_end_lima_count =  lima_process.i7_i5_lima_count
 either_end_lima_count = lima_process.either_i7_i5_lima_count
 
 
-both_end_bam.view()
+//both_end_bam.view()
 
 i7_i5_bam_modified = both_end_bam
                       .map{it -> it[1]}
@@ -252,7 +252,7 @@ i7_i5_bam_modified = both_end_bam
                                     )}
                                     
 i7_i5_bam_modified.view()
- either_end_bam.view()
+ //either_end_bam.view()
 
 i7_5_bam_modified = either_end_bam
                    .map{it -> it[1]}
@@ -280,7 +280,7 @@ merged_fastq_barcode = barcode
                        .map{ it -> tuple ( it[0][0], it[1][1], it[1][2], it[0][1], it[0][2])}
                        
                        
-merged_fastq_barcode.view()
+//merged_fastq_barcode.view()
 
 bbduk_clean = clean_reads(merged_fastq_barcode)
 
