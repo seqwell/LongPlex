@@ -262,7 +262,7 @@ i7_5_bam_modified = either_end_bam
                                     it
                                     )}
                                     
-i7_5_bam_modified.view()
+//i7_5_bam_modified.view()
                                     
 i7_i5_bam = i7_i5_bam_modified
             .mix(i7_5_bam_modified)
