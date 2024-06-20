@@ -138,10 +138,9 @@ path ("adapter_info")                                             , emit: adapte
 
 
 #filter for i5
-cat $barcode2 | sed 's/^T//g' > barcode2.fa
 bbduk.sh -Xmx2g \
 in=$bam \
-ref=barcode2.fa  \
+ref=$barcode2  \
 out=${sample_id}.${well_id}.unmatched.fastq.gz \
 outm=${sample_id}.${well_id}.matched.fastq.gz  \
 k=43 \
@@ -160,10 +159,9 @@ fi
 
 
 #filter for i7
-cat $barcode1 |   sed 's/^T//g' > barcode1.fa
 bbduk.sh -Xmx2g \
 in=clean.${sample_id}.${well_id}.fastq.gz \
-ref=barcode1.fa  \
+ref=$barcode1  \
 out=${sample_id}.${well_id}.unmatched.fastq.gz \
 outm=${sample_id}.${well_id}.matched.fastq.gz  \
 k=44 \
