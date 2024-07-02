@@ -87,3 +87,41 @@ The samplesheet is in csv format. There are four columns for the samplesheet: sa
  - aws
    
 Profile option can be changed in the *nextflow.sh* file.
+
+
+## output from example run:
+ - you can find the demultiplex summary in the demux_summary folder.
+LongPlex_demux_out/
+└── bc1001
+    ├── bbduk_out
+    │   ├── failFilterFastq
+    │   │   ├── i5.bc1001.A01.failFilter.fastq.gz
+    │   │   ├── i5.bc1001.A02.failFilter.fastq.gz
+    │   ├── passFilterFastq
+    │   │   ├── passFilter.bc1001.A01.fastq.gz
+    │   │   ├── passFilter.bc1001.A02.fastq.gz
+    │   └── stats
+    │       ├── i5.bc1001.A01.stats.txt
+    │       ├── i5.bc1001.A02.stats.txt
+    ├── demux_summary
+    │   └── bc1001_demux_report.csv
+    ├── hifibam_count
+    │   └── bc1001.hifi.reads.count
+    └── lima_out
+        ├── demux_either_i7_i5
+        │   ├── bc1001.consensusreadset.xml
+        │   ├── bc1001.json
+        │   ├── bc1001.lima.guess
+        │   ├── bc1001.lima.report
+        │   ├── bc1001.lima.summary
+        │   ├── bc1001.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P5.bam
+        │   ├── bc1001.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P5.bam.pbi
+        └── demux_i7_i5
+            ├── bc1001.consensusreadset.xml
+            ├── bc1001.json
+            ├── bc1001.lima.guess
+            ├── bc1001.lima.log
+            ├── bc1001.lima.report
+            ├── bc1001.lima.summary
+            ├── bc1001.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P7.bam
+            ├── bc1001.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P7.bam.pbi
