@@ -86,8 +86,9 @@ The samplesheet is in csv format. There are four columns for the samplesheet: sa
 The outdir can be local (a obsolute path or a relative path) or a link to s3 bucket. If it is a link to s3 bucket, please make sure to fill in the correct credentials in the nextflow.config file.
 
 ## profile options: 
- - singularity
  - aws
+ - singularity
+ - apptainer
    
 Profile option can be changed in the *nextflow.sh* file.
 
