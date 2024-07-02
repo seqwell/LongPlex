@@ -92,18 +92,21 @@ Profile option can be changed in the *nextflow.sh* file.
 ## output from example run:
  - you can find the demultiplex summary in the demux_summary folder.
    
-LongPlex_demux_out/
+$ tree LongPlex_demux_out
+LongPlex_demux_out
 └── bc1001
     ├── bbduk_out
     │   ├── failFilterFastq
     │   │   ├── i5.bc1001.A01.failFilter.fastq.gz
-    │   │   ├── i5.bc1001.A02.failFilter.fastq.gz
+    │   │   └── i5.bc1001.A02.failFilter.fastq.gz
     │   ├── passFilterFastq
     │   │   ├── passFilter.bc1001.A01.fastq.gz
-    │   │   ├── passFilter.bc1001.A02.fastq.gz
+    │   │   └── passFilter.bc1001.A02.fastq.gz
     │   └── stats
     │       ├── i5.bc1001.A01.stats.txt
     │       ├── i5.bc1001.A02.stats.txt
+    │       ├── i7.bc1001.A01.stats.txt
+    │       └── i7.bc1001.A02.stats.txt
     ├── demux_summary
     │   └── bc1001_demux_report.csv
     ├── hifibam_count
@@ -117,6 +120,8 @@ LongPlex_demux_out/
         │   ├── bc1001.lima.summary
         │   ├── bc1001.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P5.bam
         │   ├── bc1001.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P5.bam.pbi
+        │   ├── bc1001.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P5.consensusreadset.xml
+        │   └── i7_5_bc1001.lima.counts
         └── demux_i7_i5
             ├── bc1001.consensusreadset.xml
             ├── bc1001.json
@@ -126,3 +131,5 @@ LongPlex_demux_out/
             ├── bc1001.lima.summary
             ├── bc1001.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P7.bam
             ├── bc1001.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P7.bam.pbi
+            ├── bc1001.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P7.consensusreadset.xml
+            └── i7_i5_bc1001.lima.counts
