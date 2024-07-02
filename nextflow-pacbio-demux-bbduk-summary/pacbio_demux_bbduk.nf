@@ -134,6 +134,7 @@ tuple val(sample_id), val(well_id), path (bam) , path(barcode1), path(barcode2)
 
 output:
 tuple val(sample_id), val(well_id), path ("passFilter*.fastq.gz") , emit: fassFilter_fastq
+tuple val(sample_id), val(well_id), path ("*failFilter*.fastq.gz") 
 tuple val(sample_id),  path ("*stat*")                            , emit: bbduk_stat
 path ("adapter_info")                                             , emit: adapter_info
 
