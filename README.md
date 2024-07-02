@@ -38,8 +38,12 @@ $ tree
 ├── barcode
 │   ├── LongPlex_set1_i5_trimmed_adapters.fa
 │   ├── LongPlex_set1_i7_trimmed_adapters.fa
+│   ├── LongPlex_set2_i5_trimmed_adapters.fa
+│   ├── LongPlex_set2_i7_trimmed_adapters.fa
 │   ├── LongPlex_set3_i5_trimmed_adapters.fa
 │   └── LongPlex_set3_i7_trimmed_adapters.fa
+├── data
+│   └── example.bam
 ├── nextflow-pacbio-demux-bbduk-summary
 │   ├── bin
 │   │   └── create_bbduk_summary.R
