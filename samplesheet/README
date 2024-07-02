@@ -1,0 +1,3 @@
+- the sample_path can be local or link to s3 bucket
+- the barcode path can be local or a link to s3 bucket
+- if you use link to s3 bucket, make sure to fill in the correct credentials in nextflow.config
