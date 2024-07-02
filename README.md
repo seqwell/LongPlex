@@ -91,4 +91,5 @@ Profile option can be changed in the *nextflow.sh* file.
 
 ## output from example run:
  - you can find the demultiplex summary in the demux_summary folder.
+ - check the README file in the output folder for the output structure.
 
