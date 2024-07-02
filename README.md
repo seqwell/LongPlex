@@ -81,4 +81,5 @@ The samplesheet is in csv format. There are four columns for the samplesheet: sa
 ## profile options: 
  - singularity
  - aws
+   
 Profile option can be changed in the *nextflow.sh* file.
