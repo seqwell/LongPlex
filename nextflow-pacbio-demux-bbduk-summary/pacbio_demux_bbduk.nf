@@ -3,6 +3,7 @@
 
 
 params.samplesheet = "samplesheet.csv"
+params.outdir      = "LongPlex_demux_out"
 
 
 samples =Channel
@@ -16,9 +17,10 @@ samples =Channel
             
 process reads_count {
 
-publishDir path: 'hifibam_count',  mode: 'copy'
+tag "${sample_id}"
 
-container 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_1'
+publishDir path: "${params.outdir}/${sample_id}/hifibam_count",  mode: 'copy'
+
 
 input:
 tuple val(sample_id), path(bam)
@@ -39,9 +41,9 @@ paste id count > ${sample_id}.hifi.reads.count
 
 process lima {
 
-container 'quay.io/biocontainers/lima:2.7.1--h9ee0642_0'
+tag "${sample_id}"
 
-publishDir path: 'lima_out', pattern: 'demux_*/*', mode: 'copy'
+publishDir path: "${params.outdir}/${sample_id}/lima_out", pattern: 'demux_*/*', mode: 'copy'
 
 
 input:
@@ -95,9 +97,8 @@ mv demux_either_i7_i5/${sample_id}.lima.counts demux_either_i7_i5/i7_5_${sample_
             
 process merge_fq {
 
-//publishDir path: 'fastq_merged_i5_i7', pattern: '*', mode: 'copy'
+tag "${sample_id}_${well_id}"
 
-container 'quay.io/biocontainers/samtools:1.19.2--h50ea8bc_1'
 input:
   tuple val(sample_id), val(well_id), path(bam) 
   
@@ -118,10 +119,12 @@ samtools fastq ${sample_id}.${well_id}.bam | bgzip -c > ${sample_id}.${well_id}.
 
 process clean_reads {
 
+tag "${sample_id}_${well_id}"
 
-publishDir path: 'bbduk_out_i7_i5', pattern: '*', mode: 'copy'
+publishDir path: "${params.outdir}/${sample_id}/bbduk_out/passFilterFastq", pattern: 'passFilter*fastq.gz', mode: 'copy'
+publishDir path: "${params.outdir}/${sample_id}/bbduk_out/failFilterFastq", pattern: '*failFilter*fastq.gz', mode: 'copy'
+publishDir path: "${params.outdir}/${sample_id}/bbduk_out/stats", pattern: '*stat*', mode: 'copy'
 
-container 'staphb/bbtools:39.01'
 
 
 input:
@@ -173,7 +176,7 @@ if [ -f ${sample_id}.${well_id}.unmatched.fastq.gz ]; then
 mv ${sample_id}.${well_id}.unmatched.fastq.gz passFilter.${sample_id}.${well_id}.fastq.gz
 fi
 if [ -f ${sample_id}.${well_id}.matched.fastq.gz ]; then
-mv ${sample_id}.${well_id}.matched.fastq.gz i7.i5.${sample_id}.${well_id}.failFilter.fastq.gz
+mv ${sample_id}.${well_id}.matched.fastq.gz i7.${sample_id}.${well_id}.failFilter.fastq.gz
 fi
 
 
@@ -198,9 +201,10 @@ paste a b c > adapter_info
           
 process bbduk_stats { 
 
-container 'rocker/verse:4.3.1'
+tag "${sample_id}"
 
-publishDir path: 'bbduk_summary', pattern: '*.csv', mode: 'copy'
+
+publishDir path: "${params.outdir}/${sample_id}/demux_summary", pattern: '*.csv', mode: 'copy'
 
 input:
   tuple val(sample_id),  path (stat) 
@@ -241,7 +245,7 @@ both_end_lima_count =  lima_process.i7_i5_lima_count
 either_end_lima_count = lima_process.either_i7_i5_lima_count
 
 
-//both_end_bam.view()
+
 
 i7_i5_bam_modified = both_end_bam
                       .map{it -> it[1]}
@@ -251,8 +255,7 @@ i7_i5_bam_modified = both_end_bam
                                         it
                                     )}
                                     
-i7_i5_bam_modified.view()
- //either_end_bam.view()
+
 
 i7_5_bam_modified = either_end_bam
                    .map{it -> it[1]}
@@ -262,29 +265,25 @@ i7_5_bam_modified = either_end_bam
                                     it
                                     )}
                                     
-//i7_5_bam_modified.view()
+
                                     
 i7_i5_bam = i7_i5_bam_modified
             .mix(i7_5_bam_modified)
             .groupTuple(by: [0,1])
             
-//i7_i5_bam.view()
 
 
 merged_fastq = merge_fq(i7_i5_bam)
-//merged_fastq.view()
 
-//barcode.view()
+
 merged_fastq_barcode = barcode
                        .cross(merged_fastq)
                        .map{ it -> tuple ( it[0][0], it[1][1], it[1][2], it[0][1], it[0][2])}
                        
-                       
-//merged_fastq_barcode.view()
+                    
 
 bbduk_clean = clean_reads(merged_fastq_barcode)
 
-//bbduk_clean.view()
 
 fass_filter_fastq = bbduk_clean.fassFilter_fastq
 
@@ -292,20 +291,30 @@ bbduk_stats = bbduk_clean.bbduk_stat
 
 adapter = bbduk_clean.adapter_info
 
-//bbduk_stats.view()
-//count.view()
-//both_end_lima_count.view()
-//either_end_lima_count.view()
+
 stat_ch = bbduk_stats.mix(count).mix(both_end_lima_count).mix(either_end_lima_count)
        .groupTuple(by: 0) 
         .map {it -> tuple (it[0], it[1].flatten())}
 
-//stat_ch.view()
+
 
 bbduk_stats( stat_ch, adapter)
 
 }
 
+
+
+workflow.onComplete {
+    println "Project output directory: ${workflow.projectDir}/${params.outdir}"
+    println "Pipeline completed at: $workflow.complete"
+    println "Pipeline completed time duration: $workflow.duration"
+    println "Command line: $workflow.commandLine"
+    println "Execution status: ${ workflow.success ? 'OK' : 'failed' }"
+ }
+
+ workflow.onError {
+    println "Error: Pipeline execution stopped with the following message: ${workflow.errorMessage}"
+}
 
 
           
