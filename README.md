@@ -92,18 +92,3 @@ Profile option can be changed in the *nextflow.sh* file.
 ## output from example run:
  - you can find the demultiplex summary in the demux_summary folder.
 
-`
-$ tree LongPlex_demux_out
-LongPlex_demux_out
-└── bc1001
-    ├── bbduk_out
-    │   ├── failFilterFastq
-    │   └── stats
-    ├── demux_summary
-    │   └── bc1001_demux_report.csv
-    ├── hifibam_count
-    │   └── bc1001.hifi.reads.count
-    └── lima_out
-        ├── demux_either_i7_i5
-        └── demux_i7_i5
-`
