@@ -91,6 +91,7 @@ Profile option can be changed in the *nextflow.sh* file.
 
 ## output from example run:
  - you can find the demultiplex summary in the demux_summary folder.
+   
 LongPlex_demux_out/
 └── bc1001
     ├── bbduk_out
