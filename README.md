@@ -54,7 +54,7 @@ $ tree
     └── samplesheet.csv
 ```
 The pipeline can be run using the scripts in the nextflow.sh script, run as `bash nextflow.sh`.
-The required inputs are *samplesheet* and *outdir*.
+The required inputs are *samplesheet* and *outdir*. If you have download this repo, go can do a quick test run using the *nextflow.sh* code as below.
 
 ```
 #!/bin/bash
