@@ -95,7 +95,7 @@ mv demux_either_i7_i5/${sample_id}.lima.counts demux_either_i7_i5/i7_5_${sample_
             
             
             
-process merge_fq {
+process merge_reads {
 
 tag "${sample_id}_${well_id}"
 
