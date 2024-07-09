@@ -16,9 +16,7 @@ include { validateParameters; paramsHelp; paramsSummaryLog; samplesheetToList } 
 
 
 if (params.help) {
-   log.info paramsHelp("
-   
-nextflow run \
+   log.info paramsHelp("nextflow run \
 -profile aws \
 nextflow-pacbio-demux-bbduk-summary/pacbio_demux_bbduk.nf \
 -c nextflow-pacbio-demux-bbduk-summary/nextflow.config \
