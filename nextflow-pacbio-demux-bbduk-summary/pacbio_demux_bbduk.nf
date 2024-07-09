@@ -237,8 +237,8 @@ tuple val(sample_id), val(well_id), path (bam) , path(barcode1), path(barcode2)
 
 output:
 tuple val(sample_id), val(well_id), path ("passFilter*.bam") ,      emit: fassFilter_bam
-tuple val(sample_id), val(well_id), path ("*failFilter*.bam") 
-tuple val(sample_id),  path ("*stat*")                            , emit: bbduk_stat
+tuple val(sample_id), val(well_id), path ("*failFilter*.bam"),      emit: failFilter_bam 
+tuple val(sample_id),  path ("*stat*"),                             emit: bbduk_stat
 
 
 
@@ -317,7 +317,51 @@ create_bbduk_summary.R   $sample_id
 
 }
 
+process fastqc {
+   
+    
 
+    input:
+    tuple val(sample_id), val(well_id), path (reads)
+ 
+    output:
+    file "*_fastqc.{zip,html}" 
+ 
+    script:
+    """
+    fastqc -q $reads
+    """
+
+
+}
+
+
+
+process multiqc {
+
+
+    publishDir path: "${params.outdir}/fastqc", pattern: '*.html', mode: 'copy'
+
+    input:
+    file ('fastqc/*') 
+ 
+    output:
+    file "*fastqc_report.html" 
+ 
+    script:
+   
+    def datetime = new Date().format("yyyy-MM-dd_HH-mm-ss", TimeZone.getTimeZone("UTC"))
+    def filename = datetime + "_fastqc_report.html"
+    
+    """
+    multiqc   . \\
+        --filename ${filename} \\
+        --force \\
+        --interactive \\
+        --no-data-dir \\
+        --verbose 
+    """
+}
 
 
 workflow {
@@ -400,6 +444,12 @@ stat_ch = bbduk_stats.mix(count).mix(both_end_lima_count).mix(either_end_lima_co
 
 
 bbduk_stats( stat_ch, adapter)
+
+fastqc = fastqc(bbduk_clean_bam.fassFilter_bam)
+
+fastqc_files = fastqc.collect().ifEmpty([])
+
+multiqc(fastqc_files)
 
 }
 
