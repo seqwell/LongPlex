@@ -12,7 +12,32 @@ samples =Channel
     .map { row -> tuple(row.sample_ID, file(row.sample_path), file(row.i7_barcode), file(row.i5_barcode)) }
     
 
+include { validateParameters; paramsHelp; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
 
+
+if (params.help) {
+   log.info paramsHelp("
+   
+nextflow run \
+-profile aws \
+nextflow-pacbio-demux-bbduk-summary/pacbio_demux_bbduk.nf \
+-c nextflow-pacbio-demux-bbduk-summary/nextflow.config \
+--samplesheet ${PWD}/samplesheet/samplesheet.csv \
+--outdir  ${PWD}/output/LongPlex_demux_out \
+-with-report \
+-with-trace  \
+-bg -resume")
+   exit 0
+}
+
+
+validateParameters()
+
+
+log.info paramsSummaryLog(workflow)
+
+
+ch_input = Channel.fromList(samplesheetToList(params.samplesheet, "assets/schema_input.json"))
 
             
 process reads_count {
