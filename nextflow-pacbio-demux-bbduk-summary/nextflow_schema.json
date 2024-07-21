@@ -1,5 +1,5 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$schema": "http://json-schema.org/draft-07/schema",
     "allOf": [
         {
             "$ref": "#/definitions/input_output_options"
@@ -17,6 +17,7 @@
                     "help_text": "Header required with columns for sample_ID,sample_path,i7_barcode,i5_barcode",
                     "mimetype": "text/csv",
                     "pattern": "^\\S+\\.(csv)$",
+                    "schema": "assets/schema_input.json",
                     "type": "string"
                 },
                 
