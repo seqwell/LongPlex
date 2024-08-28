@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "items": {
+        "properties": {
+            "sample_ID": {
+                "errorMessage": "Sample ID must be provided and cannot contain spaces, can only contain numbers and letters",
+                "meta": ["sample_ID"],
+                "pattern": "^[a-zA-Z0-9]*$",
+                "type": "string"
+            },
+            "sample_path": {
+                "errorMessage": "hifi bam file path must be provided, cannot contain spaces and must have the extension '.bam'",
+                "pattern": "^\\S+\\.bam$",
+                "type": "string",
+                "format": "file-path"
+            },
+            "i7_barcode": {
+                "pattern": "^\\S+\\.fa$",
+                "type": "string",
+                "format": "file-path",
+                "errorMessage": "file path for i7 barcode must be provided, cannot contain spaces and must have the extension '.fa'"
+            },
+            "i5_barcode": {
+                "pattern": "^\\S+\\.fa$",
+                "type": "string",
+                "format": "file-path",
+                "errorMessage": "file path for i5 barcode must be provided, cannot contain spaces and must have the extension '.fa'"
+            },
+      
+
+        },
+        "required": [
+            "sample_ID",
+            "i7_barcode",
+            "i5_barcode"
+            
+        ],
+        "type": "object"
+    },
+    "type": "array"
+}
