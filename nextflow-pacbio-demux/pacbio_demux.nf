@@ -26,7 +26,7 @@ samples =Channel
 bams = samples
        .map{ it -> tuple( it[0], it[1])}
 
-count = reads_count(bams)
+
 
 barcode = samples
            .map{ it -> tuple( it[0], it[2], it[3])}
