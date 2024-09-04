@@ -6,13 +6,14 @@ output:
 
 # seqWell longPlex kit demultiplex nextflow pipeline
 
-This is the work flow in nextflow to do demultiplex on pacbio data for seqWell longplex kit. The pipeline uses lima for demultiplex and uses BBDuk for data filtering.  The workflow is as shown in the image below. The workflow starts with hifi bam file, then a two-step lima process is conducted. Each lima process will clip off the corresponding barcode.
+This is the work flow in nextflow to do demultiplex on pacbio data for seqWell longplex kit. The pipeline uses lima for demultiplex and uses longplexpy tools for data filtering.  The workflow is as shown in the image below. The workflow starts with hifi bam file, then a two-step lima process is conducted. Each lima process will clip off the corresponding barcode.
 
- - lima demulitplex using neighbor option, get reads with both i7 and i5 seqWell barcode. Keep unbarcoded reads which goes to the next lima process.
- - lima demultiplex using i7 or i5 barcode on the unbarcoded reads from the previous lima process. 
+ - lima demulitplex using neighbor option, get reads with both i7 and i5 seqWell barcode. Keep unbarcoded reads which goes to the next reads clean and lima process.
+ - From the unbarcoded reads from the first lima process, longplexpy tool is used to remove undesired hybrids.
+ - second lima demultiplex process using i7 or i5 barcode on the cleaned unbarcoded reads. 
 
-After the two-step lima process, bam files from these two stpes are merged from each sample and converted to fastq format. BBDuk is used to filter out reads that have extra barcode left on the merged fastq files.
-The output from this pipeline has lima output, BBDuk output, and also a demultiplex summary from lima and BBDuk process.
+After the two-step lima process, bam files from these two stpes are merged from each sample, fastq files are also created for each sample from the merged bam files. 
+The output from this pipeline has lima output, demultiplex summary, and also fastqc report for the merged bams for each sample.
 
 ![Fig1. demultiplex workflow](./assets/demux_workflow.png)
 
@@ -21,13 +22,15 @@ The output from this pipeline has lima output, BBDuk output, and also a demultip
 ## Docker containers used in this pipeline:
  - *lima*: quay.io/biocontainers/lima:2.7.1--h9ee0642_0
  - *samtools*: quay.io/biocontainers/samtools:1.19.2--h50ea8bc_1
- - *bbtools*: staphb/bbtools:39.01
+ - *longplexpy*: seqwell/longplexpy:latest
  - *R*: rocker/verse:4.3.1
+ - *fastqc*: quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0
+ - *multiqc*: quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
 
 
 
 ## How to run the pipeline:
-Download the code files and put the files in your working directory like this tree structure. Use `chmod +x bin/*` to make create_bbduk_summary.R executable.
+Download the code files and put the files in your working directory like this tree structure. Use `chmod +x bin/*` to make create_demux_summary.R executable.
 
 ```
 $ tree
@@ -44,11 +47,21 @@ $ tree
 │   └── LongPlex_set3_i7_trimmed_adapters.fa
 ├── data
 │   └── example.bam
-├── nextflow-pacbio-demux-bbduk-summary
+├── nextflow-pacbio-demux
 │   ├── bin
-│   │   └── create_bbduk_summary.R
+│   │   └── create_demux_summary.R
+│   ├── modules
+│   │   ├── demux_stats.nf
+│   │   ├── fastqc.nf
+│   │   ├── lima_i7_i5_both_end.nf
+│   │   ├── lima_i7_i5_either_end.nf
+│   │   ├── listHybrids.nf
+│   │   ├── merge_reads.nf
+│   │   ├── multiqc.nf
+│   │   └── removeHybrids.nf
 │   ├── nextflow.config
-│   └── pacbio_demux_bbduk.nf
+│   ├── nextflow_schema.json
+│   └── pacbio_demux.nf
 ├── nextflow.sh
 └── samplesheet
     └── samplesheet.csv
@@ -64,8 +77,8 @@ outdir="output/LongPlex_demux_out"
 
 nextflow run \
 -profile aws \
-nextflow-pacbio-demux-bbduk-summary/pacbio_demux_bbduk.nf \
--c nextflow-pacbio-demux-bbduk-summary/nextflow.config \
+nextflow-pacbio-demux/pacbio_demux.nf \
+-c nextflow-pacbio-demux/nextflow.config \
 --samplesheet $samplesheet \
 --outdir  $outdir \
 -with-report \
