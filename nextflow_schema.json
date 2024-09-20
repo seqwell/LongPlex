@@ -1,12 +1,14 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "allOf": [
         {
             "$ref": "#/definitions/input_output_options"
         }
     ],
+    "title": "seqWell LongPlex Demux",
     "definitions": {
         "input_output_options": {
+            "title": "Input & Output Options",
             "description": "Define the input and output data locations.",
             "fa_icon": "fas fa-terminal",
             "properties": {
@@ -14,32 +16,25 @@
                     "description": "Comma-separated sample sheet.",
                     "fa_icon": "fas fa-file-csv",
                     "format": "file-path",
-                    "help_text": "Header required with columns for sample_ID,sample_path,i7_barcode,i5_barcode",
+                    "help_text": "CSV file containing samples with headers: sample_ID, sample_path, i7_barcode, i5_barcode",
                     "mimetype": "text/csv",
                     "pattern": "^\\S+\\.(csv)$",
-                    "schema": "assets/schema_input.json",
+                    "schema": "schemas/input_schema.json",
                     "type": "string"
                 },
-                
-               
-                "outdir": {
+                "output": {
                     "description": "Output directory or URI.",
                     "fa_icon": "fas fa-folder-open",
                     "format": "directory-path",
                     "type": "string"
                 }
-                
-                
             },
             "required": [
                 "samplesheet",
-                "outdir"
-               
+                "output"
             ],
-            "title": "Input & Output Options",
             "type": "object"
         }
     },
-    "title": "seqWell LongPlex Demultiplex Workflow",
     "type": "object"
 }

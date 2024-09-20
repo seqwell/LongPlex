@@ -1,10 +1,14 @@
----
-output:
-  word_document: default
-  html_document: default
----
-
 # seqWell LongPlex Demultiplex Nextflow Pipeline
+TODO List:
+
+- [ ] Get to data output parity with clean repo
+- [ ] Get invalid outputs for nf-schema recoganized correctly
+- [ ] Make Sample sheet Latch compliant
+- [ ] Put test data on Latch so Latch can use it
+- [ ] Cleanup config resource directives? What does latch need.
+- [ ] longplexpy Docker?
+- [ ] Single standalone Docker on latch or one per process?
+- [ ] Re-write README based on new changes/structure
 
 This is the nextflow pipeline to demultiplex PacBio data for the seqWell LongPlex Long Fragment Multiplexing kit. The pipeline uses Lima for demultiplexing and uses longplexpy tools for data filtering.  The workflow is as shown in the image below. The workflow starts with hifi bam file(s), then a two-step Lima process is conducted. Each Lima process will clip off the corresponding barcode.
 
