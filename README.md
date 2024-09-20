@@ -1,10 +1,15 @@
----
-output:
-  word_document: default
-  html_document: default
----
+# seqWell LongPlex Demux Pipeline
 
-# seqWell longPlex kit demultiplex nextflow pipeline
+TODO List:
+
+- [ ] Get to data output parity with clean repo
+- [ ] Get invalid outputs for nf-schema recoganized correctly
+- [ ] Make Sample sheet Latch compliant
+- [ ] Put test data on Latch so Latch can use it
+- [ ] Cleanup config resource directives? What does latch need.
+- [ ] longplexpy Docker?
+- [ ] Single standalone Docker on latch or one per process?
+- [ ] Re-write README based on new changes/structure
 
 This is the work flow in nextflow to do demultiplex on pacbio data for seqWell longplex kit. The pipeline uses lima for demultiplex and uses longplexpy tools for data filtering.  The workflow is as shown in the image below. The workflow starts with hifi bam file, then a two-step lima process is conducted. Each lima process will clip off the corresponding barcode.
 

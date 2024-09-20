@@ -1,0 +1,8 @@
+README.md
+CHANGELOG.md
+docker-compose.yml
+Dockerfile
+.latch
+.git
+**/__pycache__
+.latch_report.tar.gz
