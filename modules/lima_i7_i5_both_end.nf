@@ -6,7 +6,6 @@ process LIMA_BOTH_END {
     tuple val(meta), path(bam)
 
     output:
-    path ('demux_i7_i5/*')
     tuple val(meta), path('demux_i7_i5/*--*.bam'), emit: bam
     tuple val(meta), path("demux_i7_i5/*lima.counts"), emit: counts
     tuple val(meta), path("demux_i7_i5/*lima.summary"), emit: summary

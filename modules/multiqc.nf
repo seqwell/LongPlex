@@ -1,15 +1,15 @@
 process MULTIQC {
-    publishDir path: "${params.outdir}/fastqc", pattern: '*.html', mode: 'copy'
+    publishDir path: "${params.output}/multiqc", pattern: '*.html', mode: 'copy'
 
     input:
     path('fastqc/*')
 
     output:
-    path('*fastqc_report.html')
+    path('*multiqc_report.html')
 
     script:
     def datetime = new Date().format("yyyy-MM-dd_HH-mm-ss", TimeZone.getTimeZone("UTC"))
-    def filename = datetime + "_fastqc_report.html"
+    def filename = datetime + "_multiqc_report.html"
     """
     multiqc . \\
         --filename ${filename} \\
