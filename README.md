@@ -1,8 +1,8 @@
 # seqWell LongPlex Demultiplex Nextflow Pipeline
 TODO List:
 
-- [ ] Get to data output parity with clean repo
-- [ ] Get invalid outputs for nf-schema recoganized correctly
+- [X] Get to data output parity with clean repo
+- [X] Get invalid outputs for nf-schema recognized correctly
 - [ ] Make Sample sheet Latch compliant
 - [ ] Put test data on Latch so Latch can use it
 - [ ] Cleanup config resource directives? What does latch need.
@@ -54,21 +54,25 @@ The required inputs are *samplesheet* and *output*.
 ## samplesheet requirement: 
 The samplesheet is in csv format. There are four columns for the samplesheet: sample_ID, sample_path, i7_barcode, and i5_barcode.
 
- - *sample_ID*: You can have only letters and numbers in sampe_ID. Please avoid having underline(_) and dash (-) and dot(.) in the sample_ID.
- - *sample_path*: The sample_path can be local or a link to an s3 bucket. If it is a link to an s3 bucket, please make sure to fill in the correct credentials in the nextflow.config file.
- - *i7_barcode, i5_barcode*: The barcodes are in the barcode folder. For early access users, please use barcode set3. Please use barcode set1 if you bought the kits after the launch.
+ - *sample_ID*: You can have only letters and numbers in sample_ID.
+ Please avoid having underline(_) and dash (-) and dot(.) in the sample_ID.
+ - *sample_path*: The sample_path can be local or a link to s3 bucket.
+ If it is a link to s3 bucket, please make sure to fill in the correct credentials in the nextflow.config file.
+ - *i7_barcode, i5_barcode*: The barcodes are in the barcode folder.
+ For early access users, please use barcode set3.
+ Please use barcode set1 if you bought the kits after the launch.
 
-## outdir requirement:
-The outdir can be local (an absolute path or a relative path) or a link to s3 bucket.
-If it is a link to an s3 bucket, please make sure to fill in the correct credentials in the nextflow.config file.
+## output requirement:
+The output can be local (an absolute path or a relative path) or a link to s3 bucket.
+If it is a link to s3 bucket, please make sure to fill in the correct credentials in the nextflow.config file.
 
 ## profile options: 
- - aws
- - singularity
  - apptainer
+ - aws
+ - docker
+ - singularity
    
 Profile option can be changed in the *nextflow.sh* file.
-
 
 ## output from example run:
  - you can find the demultiplex summary in the demux_summary folder.
