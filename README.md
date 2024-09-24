@@ -10,18 +10,19 @@ TODO List:
 - [ ] Single standalone Docker on latch or one per process?
 - [ ] Re-write README based on new changes/structure
 
-This is the nextflow pipeline to demultiplex PacBio data for the seqWell LongPlex Long Fragment Multiplexing kit. The pipeline uses Lima for demultiplexing and uses longplexpy tools for data filtering.  The workflow is as shown in the image below. The workflow starts with hifi bam file(s), then a two-step Lima process is conducted. Each Lima process will clip off the corresponding barcode.
+This is the nextflow pipeline to demultiplex PacBio data for the seqWell LongPlex Long Fragment Multiplexing kit.
+The pipeline uses Lima for demultiplex and uses longplexpy tools for data filtering.
+The workflow is as shown in the image below.
+The workflow starts with hifi bam file(s), then a two-step Lima process is conducted. Each Lima process will clip off the corresponding barcode.
 
  - The first Lima demulitplex uses the neighbor option to get reads with both i7 and i5 seqWell barcodes. Unbarcoded reads are then used in the next clean and Lima process.
  - From the unbarcoded reads from the first Lima process, longplexpy tool is used to remove undesired hybrids.
  - The second Lima demultiplex process uses i7 OR i5 barcode on the cleaned unbarcoded reads. 
 
-After the two-step lima process, bam files from these two steps are merged from each sample, and fastq files are also created for each sample from the merged bam files. 
-The output from this pipeline has lima output, demultiplex summary, and a fastqc report for the merged bams for each sample.
+After the two-step Lima process, bam files from these two steps are merged from each sample, and fastq files are also created for each sample from the merged bam files. 
+The output from this pipeline has Lima output, demultiplex summary, and a fastqc report for the merged bams for each sample.
 
-![Fig1. demultiplex workflow](./assets/demux_workflow.png)
-
-
+![Fig1. demultiplex workflow](./docs/demux_workflow.png)
 
 ## Docker containers used in this pipeline:
  - *lima*: quay.io/biocontainers/lima:2.7.1--h9ee0642_0
@@ -31,66 +32,24 @@ The output from this pipeline has lima output, demultiplex summary, and a fastqc
  - *fastqc*: quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0
  - *multiqc*: quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
 
-
-
 ## How to run the pipeline:
-Download the code files and put the files in your working directory like this tree structure. Use `chmod +x bin/*` to make create_demux_summary.R executable.
+...
+
+The pipeline can be run using the included test data with:
 
 ```
-$ tree
-.
-├── README.md
-├── assets
-│   └── demux_workflow.png
-├── barcode
-│   ├── LongPlex_set1_i5_trimmed_adapters.fa
-│   ├── LongPlex_set1_i7_trimmed_adapters.fa
-│   ├── LongPlex_set2_i5_trimmed_adapters.fa
-│   ├── LongPlex_set2_i7_trimmed_adapters.fa
-│   ├── LongPlex_set3_i5_trimmed_adapters.fa
-│   └── LongPlex_set3_i7_trimmed_adapters.fa
-├── data
-│   └── example.bam
-├── nextflow-pacbio-demux
-│   ├── bin
-│   │   └── create_demux_summary.R
-│   ├── modules
-│   │   ├── demux_stats.nf
-│   │   ├── fastqc.nf
-│   │   ├── lima_i7_i5_both_end.nf
-│   │   ├── lima_i7_i5_either_end.nf
-│   │   ├── listHybrids.nf
-│   │   ├── merge_reads.nf
-│   │   ├── multiqc.nf
-│   │   └── removeHybrids.nf
-│   ├── nextflow.config
-│   ├── nextflow_schema.json
-│   └── pacbio_demux.nf
-├── nextflow.sh
-└── samplesheet
-    └── samplesheet.csv
-```
-The pipeline can be run using the scripts in the nextflow.sh script, run as `bash nextflow.sh`.
-The required inputs are *samplesheet* and *outdir*. If you have downloaded this repo, you can run a quick test by using the *nextflow.sh* code as shown below.
-
-```
-#!/bin/bash
-
-samplesheet=samplesheet/samplesheet.csv
-outdir="output/LongPlex_demux_out"
-
 nextflow run \
--profile aws \
-nextflow-pacbio-demux/pacbio_demux.nf \
--c nextflow-pacbio-demux/nextflow.config \
---samplesheet $samplesheet \
---outdir  $outdir \
--with-report \
--with-trace  \
--bg -resume
-
+    -profile docker \
+    main.nf \
+    -c nextflow.config \
+    --samplesheet tests/samplesheet.csv \
+    --output  test_output \
+    -with-report \
+    -with-trace \
+    -resume
 ```
 
+The required inputs are *samplesheet* and *output*.
 
 ## samplesheet requirement: 
 The samplesheet is in csv format. There are four columns for the samplesheet: sample_ID, sample_path, i7_barcode, and i5_barcode.
@@ -100,7 +59,8 @@ The samplesheet is in csv format. There are four columns for the samplesheet: sa
  - *i7_barcode, i5_barcode*: The barcodes are in the barcode folder. For early access users, please use barcode set3. Please use barcode set1 if you bought the kits after the launch.
 
 ## outdir requirement:
-The outdir can be local (an absolute path or a relative path) or a link to an s3 bucket. If it is a link to an s3 bucket, please make sure to fill in the correct credentials in the nextflow.config file.
+The outdir can be local (an absolute path or a relative path) or a link to s3 bucket.
+If it is a link to an s3 bucket, please make sure to fill in the correct credentials in the nextflow.config file.
 
 ## profile options: 
  - aws

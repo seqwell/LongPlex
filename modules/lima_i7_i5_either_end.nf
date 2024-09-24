@@ -6,11 +6,10 @@ process LIMA_EITHER_END {
     tuple val(meta), path(bam)
 
     output:
-    path ('demux_either_i7_i5/*')
-    tuple val(meta), path ('demux_either_i7_i5/*--*.bam'), emit: bam
-    tuple val(meta), path ("demux_either_i7_i5/*lima.counts"), emit: counts
-    tuple val(meta), path ("demux_either_i7_i5/*lima.summary"), emit: summary
-    tuple val(meta), path ("demux_either_i7_i5/*unbarcoded.bam"), emit: bam_unbarcoded
+    tuple val(meta), path('demux_either_i7_i5/*--*.bam'), emit: bam
+    tuple val(meta), path("demux_either_i7_i5/*lima.counts"), emit: counts
+    tuple val(meta), path("demux_either_i7_i5/*lima.summary"), emit: summary
+    tuple val(meta), path("demux_either_i7_i5/*unbarcoded.bam"), emit: bam_unbarcoded
 
     script:
     """
