@@ -7,6 +7,8 @@ TODO List:
 - [ ] Make Sample sheet Latch compliant
 - [ ] Put test data on Latch so Latch can use it
 - [ ] Cleanup config resource directives? What does latch need.
+- [ ] Create integration test with test data
+- [ ] Create dev environment
 - [X] longplexpy Docker? Currently on docker hub, pulls automatically
 - [ ] Single standalone Docker on latch or one per process?
 - [ ] Re-write README based on new changes/structure
@@ -16,7 +18,7 @@ The pipeline uses lima for demultiplex and uses longplexpy tools for data filter
 The workflow is as shown in the image below.
 The workflow starts with hifi bam file, then a two-step lima process is conducted. Each lima process will clip off the corresponding barcode.
 
- - lima demulitplex using neighbor option, get reads with both i7 and i5 seqWell barcode. Keep unbarcoded reads which goes to the next reads clean and lima process.
+ - lima demultiplex using neighbor option, get reads with both i7 and i5 seqWell barcode. Keep unbarcoded reads which goes to the next reads clean and lima process.
  - From the unbarcoded reads from the first lima process, longplexpy tool is used to remove undesired hybrids.
  - second lima demultiplex process using i7 or i5 barcode on the cleaned unbarcoded reads. 
 

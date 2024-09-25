@@ -1,0 +1,12 @@
+name: longplex-nf-dev
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - bioconda::nextflow=24.04.1
+  - conda-forge::python=3.11.0
+  - conda-forge::pytest=8.3.3
+  - conda-forge::pip=24.2
+  - pip:
+    - pytest-workflow==2.1.0
