@@ -4,7 +4,7 @@ output:
   html_document: default
 ---
 
-# seqWell longPlex kit demultiplex nextflow pipeline
+# seqWell LongPlex Demultiplex Nextflow Pipeline
 
 This is the work flow in nextflow to do demultiplex on pacbio data for seqWell longplex kit. The pipeline uses lima for demultiplex and uses longplexpy tools for data filtering.  The workflow is as shown in the image below. The workflow starts with hifi bam file, then a two-step lima process is conducted. Each lima process will clip off the corresponding barcode.
 
