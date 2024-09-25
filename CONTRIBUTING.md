@@ -7,3 +7,8 @@ After installing mamba, the development environment can be created and activated
 mamba env create --file environment-dev.yml
 mamba activate longplex-nf-dev
 ```
+
+The integration tests can be run with
+```bash
+pytest --tag integration
+```
