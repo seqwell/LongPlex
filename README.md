@@ -6,6 +6,8 @@ TODO List:
 - [ ] Make Sample sheet Latch compliant
 - [ ] Put test data on Latch so Latch can use it
 - [ ] Cleanup config resource directives? What does latch need.
+- [ ] Create integration test with test data
+- [ ] Create dev environment
 - [X] longplexpy Docker? Currently on docker hub, pulls automatically
 - [ ] Single standalone Docker on latch or one per process?
 - [ ] Re-write README based on new changes/structure
