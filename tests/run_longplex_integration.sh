@@ -5,4 +5,4 @@ nextflow run \
     -c "${PWD}/nextflow.config" \
     main.nf \
     --samplesheet "${PWD}/tests/samplesheet.csv" \
-    --output  "./output/"
+    --output  "${PWD}/output/"

@@ -1,10 +1,11 @@
 process MERGE_READS {
     tag "${meta.sample_ID}.${meta.well_ID}"
-    publishDir path: "${params.output}/${meta.sample_ID}/merged_fastq", pattern: '*.fastq.gz', mode: 'copy'
-    publishDir path: "${params.output}/${meta.sample_ID}/merged_bam", pattern: '*.bam', mode: 'copy'
+    publishDir path: "${output_path}/${meta.sample_ID}/merged_fastq", pattern: '*.fastq.gz', mode: 'copy'
+    publishDir path: "${output_path}/${meta.sample_ID}/merged_bam", pattern: '*.bam', mode: 'copy'
 
     input:
     tuple val(meta), path(bams)
+    path(output_path)
 
     output:
     tuple val(meta), path("*.fastq.gz"), emit: fastq
