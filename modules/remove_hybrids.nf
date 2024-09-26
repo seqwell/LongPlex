@@ -1,10 +1,11 @@
 process REMOVE_HYBRIDS {
     tag "${meta.sample_ID}"
-    publishDir path: "${params.output}/${meta.sample_ID}/hybrids/", pattern: '*.bam', mode: 'copy'
+    publishDir path: "${output_path}/${meta.sample_ID}/hybrids/", pattern: '*.bam', mode: 'copy'
 
     input:
     tuple val(meta), path(i5_i7_unbarcoded)
     path(hybrid_list)
+    path(output_path)
 
     output:
     tuple val(meta), path("${meta.sample_ID}.unbarcoded.filtered.bam"), emit: bam_filtered

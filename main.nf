@@ -20,18 +20,20 @@ workflow {
     // Input Parsing
     validateParameters()
     log.info paramsSummaryLog(workflow)
-    samples_ch = Channel.fromList(samplesheetToList(params.samplesheet, "schemas/input_schema.json"))
+    def samples_ch = Channel.fromList(samplesheetToList(params.samplesheet, "schemas/input_schema.json"))
 
     // Pipeline
-    LIMA_BOTH_END(samples_ch)
+    // TODO: passing params.output to everything to avoid having params access outside the main workflow is annoying
+    // should we use a modules.config file? https://github.com/nf-core/fastquorum/blob/master/conf/modules.config
+    LIMA_BOTH_END(samples_ch, params.output)
 
-    LIST_HYBRIDS(LIMA_BOTH_END.out.report)
+    LIST_HYBRIDS(LIMA_BOTH_END.out.report, params.output)
 
-    REMOVE_HYBRIDS(LIMA_BOTH_END.out.bam_unbarcoded, LIST_HYBRIDS.out.hybrids)
+    REMOVE_HYBRIDS(LIMA_BOTH_END.out.bam_unbarcoded, LIST_HYBRIDS.out.hybrids, params.output)
     
-    LIMA_EITHER_END(REMOVE_HYBRIDS.out.bam_filtered)
+    LIMA_EITHER_END(REMOVE_HYBRIDS.out.bam_filtered, params.output)
 
-    bams_by_well_ch = LIMA_BOTH_END.out.bam
+    def bams_by_well_ch = LIMA_BOTH_END.out.bam
         .join(LIMA_EITHER_END.out.bam)
         .map { meta, both_bams, either_bams ->
             tuple(meta, both_bams + either_bams)
@@ -42,14 +44,14 @@ workflow {
             }
         }.groupTuple(by: 0)
 
-    MERGE_READS(bams_by_well_ch)
+    MERGE_READS(bams_by_well_ch, params.output)
 
-    stat_ch = LIMA_BOTH_END.out.counts
+    def stat_ch = LIMA_BOTH_END.out.counts
         .mix(LIMA_EITHER_END.out.counts, LIMA_BOTH_END.out.summary, LIMA_EITHER_END.out.summary)
         .groupTuple(by: 0) 
         .map {meta, stats -> tuple(meta, stats.flatten())}
 
-    DEMUX_STATS(stat_ch)
+    DEMUX_STATS(stat_ch, params.output)
 
     FASTQC(MERGE_READS.out.fastq)
 
