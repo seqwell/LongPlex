@@ -1,6 +1,6 @@
 process LIST_HYBRIDS {
     container 'longplexpy'
-    publishDir path: "hybrid_list", mode: 'copy'
+    publishDir path: "${params.outdir}/${sample_id}/hybrid_list", mode: 'copy'
     
     input:
         tuple val(sample_id), path(i5_i7_report)
