@@ -1,7 +1,7 @@
 process REMOVE_HYBRIDS {
     container 'longplexpy'
     
-    publishDir path: "filtered_bam", mode: 'copy'
+    publishDir path: "${params.outdir}/${sample_id}/lima_out/filtered_bam_from_both_ends", mode: 'copy'
 
     input:
         tuple val(sample_id), path(i5_i7_unbarcoded)
