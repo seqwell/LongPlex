@@ -19,14 +19,8 @@ The output from this pipeline has lima output, demultiplex summary, and a fastqc
 
 
 
-## Docker containers used in this pipeline:
- - *lima*: quay.io/biocontainers/lima:2.7.1--h9ee0642_0
- - *samtools*: quay.io/biocontainers/samtools:1.19.2--h50ea8bc_1
- - *longplexpy*: seqwell/longplexpy:latest
- - *R*: rocker/verse:4.3.1
- - *fastqc*: quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0
- - *multiqc*: quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
-
+## Docker container used in this pipeline:
+ - *longplex_demux*: seqwell/longplex_demux:latest
 
 
 ## How to run the pipeline:
