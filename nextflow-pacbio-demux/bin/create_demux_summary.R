@@ -22,16 +22,15 @@ df4 = readr::read_table(i7_5_counts)
 
 df2
 df2_s = df2 %>% 
-  dplyr::mutate( well = stringr::str_extract_all(IdxFirstNamed, "seqwell_UDI[1-4]_[A-H][0-9]{2}") ) %>% 
-  dplyr::mutate( well = as.character(well)) %>% 
+  tidyr::separate( IdxFirstNamed, c("a", "b","c","d" ), sep="_") %>% 
+  dplyr::mutate( well = paste(a,b,c, sep="_")) %>% 
   dplyr::select( well, Counts) %>% 
   dplyr::rename( P5_P7 = Counts)
 
 df4
 df4_s = df4 %>% 
-  dplyr::mutate( well = stringr::str_extract_all(IdxFirstNamed, "seqwell_UDI[1-4]_[A-H][0-9]{2}") ) %>% 
-  dplyr::mutate( well = as.character(well)) %>% 
-  dplyr::mutate( end = stringr::str_extract_all(IdxFirstNamed, "P(5|7)$") ) %>% 
+  tidyr::separate( IdxFirstNamed, c("a", "b","c","end" ), sep="_") %>% 
+  dplyr::mutate( well = paste(a,b,c, sep="_")) %>%   
   dplyr::mutate( end = as.character(end)) %>% 
   dplyr::select( well, end, Counts) %>% 
   tidyr::spread(  end, Counts)
