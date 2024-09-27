@@ -45,7 +45,7 @@ nextflow run \
     main.nf \
     -c nextflow.config \
     --samplesheet tests/samplesheet.csv \
-    --output  test_output \
+    --output ${PWD}/test_output \
     -with-report \
     -with-trace \
     -resume

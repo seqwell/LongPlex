@@ -1,10 +1,8 @@
 process LIMA_EITHER_END {
     tag "${meta.sample_ID}"
-    publishDir path: "${output_path}/${meta.sample_ID}/lima_out/", pattern: 'demux_*/*', mode: 'copy'
 
     input:
     tuple val(meta), path(bam)
-    path(output_path)
 
     output:
     tuple val(meta), path('demux_either_i7_i5/*--*.bam'), emit: bam

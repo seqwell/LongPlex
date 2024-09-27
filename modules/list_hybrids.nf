@@ -1,10 +1,8 @@
 process LIST_HYBRIDS {
     tag "${meta.sample_ID}"
-    publishDir path: "${output_path}/${meta.sample_ID}/hybrids/", pattern: '*.txt', mode: 'copy'
 
     input:
     tuple val(meta), path(i5_i7_report)
-    path(output_path)
 
     output:
     path("${meta.sample_ID}.hybrid_list.txt"), emit: hybrids

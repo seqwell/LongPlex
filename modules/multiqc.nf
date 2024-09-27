@@ -1,5 +1,4 @@
 process MULTIQC {
-    publishDir path: "${params.output}/multiqc", pattern: '*.html', mode: 'copy'
 
     input:
     path('fastqc/*')

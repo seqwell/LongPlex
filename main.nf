@@ -23,15 +23,13 @@ workflow {
     def samples_ch = Channel.fromList(samplesheetToList(params.samplesheet, "schemas/input_schema.json"))
 
     // Pipeline
-    // TODO: passing params.output to everything to avoid having params access outside the main workflow is annoying
-    // should we use a modules.config file? https://github.com/nf-core/fastquorum/blob/master/conf/modules.config
-    LIMA_BOTH_END(samples_ch, params.output)
+    LIMA_BOTH_END(samples_ch)
 
-    LIST_HYBRIDS(LIMA_BOTH_END.out.report, params.output)
+    LIST_HYBRIDS(LIMA_BOTH_END.out.report)
 
-    REMOVE_HYBRIDS(LIMA_BOTH_END.out.bam_unbarcoded, LIST_HYBRIDS.out.hybrids, params.output)
+    REMOVE_HYBRIDS(LIMA_BOTH_END.out.bam_unbarcoded, LIST_HYBRIDS.out.hybrids)
     
-    LIMA_EITHER_END(REMOVE_HYBRIDS.out.bam_filtered, params.output)
+    LIMA_EITHER_END(REMOVE_HYBRIDS.out.bam_filtered)
 
     def bams_by_well_ch = LIMA_BOTH_END.out.bam
         .join(LIMA_EITHER_END.out.bam)
@@ -44,14 +42,14 @@ workflow {
             }
         }.groupTuple(by: 0)
 
-    MERGE_READS(bams_by_well_ch, params.output)
+    MERGE_READS(bams_by_well_ch)
 
     def stat_ch = LIMA_BOTH_END.out.counts
         .mix(LIMA_EITHER_END.out.counts, LIMA_BOTH_END.out.summary, LIMA_EITHER_END.out.summary)
         .groupTuple(by: 0) 
         .map {meta, stats -> tuple(meta, stats.flatten())}
 
-    DEMUX_STATS(stat_ch, params.output)
+    DEMUX_STATS(stat_ch)
 
     FASTQC(MERGE_READS.out.fastq)
 
