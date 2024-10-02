@@ -40,13 +40,11 @@ generated_parameters = {
         type=typing.List[Sample],
         samplesheet=True,
         samplesheet_type="csv",
-        section_tile="Input & Output Options",
         description="CSV file containing samples with headers: sample_ID, sample_path, i7_barcode, i5_barcode",
     ),
     "output": NextflowParameter(
         type=LatchOutputDir,
         default=None,
-        section_tile="Input & Output Options",
         description="Output directory",
     )
 }
