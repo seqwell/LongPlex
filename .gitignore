@@ -2,3 +2,4 @@
 output/
 runme
 work/
+__pycache__
