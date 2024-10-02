@@ -11,7 +11,7 @@ from .parameters import generated_parameters
 NextflowMetadata(
     display_name='seqWell LongPlex Demux',
     author=LatchAuthor(
-        name="Your Name",
+        name="seqWell",
     ),
     parameters=generated_parameters,
     runtime_resources=NextflowRuntimeResources(
