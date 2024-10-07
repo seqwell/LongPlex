@@ -13,6 +13,8 @@ process LIMA_BOTH_END {
 
     script:
     """
+    # TODO: Remove test checking if bam can be copied
+    cp ${bam} test.bam
     cat ${meta.i7_barcode} ${meta.i5_barcode} | paste - -  | sort |  tr '\\t' '\\n' > barcode_neighbor.fa
 
     mkdir -p demux_i7_i5
