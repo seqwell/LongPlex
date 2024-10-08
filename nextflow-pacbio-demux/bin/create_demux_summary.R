@@ -22,6 +22,7 @@ df4 = readr::read_table(i7_5_counts)
 
 df2
 df2_s = df2 %>% 
+  dplyr::filter( grepl("seqwell",IdxFirstNamed )) %>% 
   tidyr::separate( IdxFirstNamed, c("a", "b","c","d" ), sep="_") %>% 
   dplyr::mutate( well = paste(a,b,c, sep="_")) %>% 
   dplyr::select( well, Counts) %>% 
@@ -29,6 +30,7 @@ df2_s = df2 %>%
 
 df4
 df4_s = df4 %>% 
+  dplyr::filter( grepl("seqwell",IdxFirstNamed )) %>% 
   tidyr::separate( IdxFirstNamed, c("a", "b","c","end" ), sep="_") %>% 
   dplyr::mutate( well = paste(a,b,c, sep="_")) %>%   
   dplyr::mutate( end = as.character(end)) %>% 
