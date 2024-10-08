@@ -2,7 +2,7 @@ process LIMA_EITHER_END {
     tag "${meta.sample_ID}"
 
     input:
-    tuple val(meta), path(bam)
+    tuple val(meta), path(bam), path(i7_barcode), path(i5_barcode)
 
     output:
     tuple val(meta), path('demux_either_i7_i5/*--*.bam'), emit: bam
@@ -12,7 +12,7 @@ process LIMA_EITHER_END {
 
     script:
     """
-    cat ${meta.i5_barcode} ${meta.i7_barcode} > barcode.fa
+    cat ${i7_barcode} ${i5_barcode} > barcode.fa
 
     mkdir -p demux_either_i7_i5
 
