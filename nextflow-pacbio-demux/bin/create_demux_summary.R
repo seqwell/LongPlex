@@ -2,7 +2,8 @@
 library(dplyr)
 library(purrr)
 
-
+col_names <- names(read_csv("CEC Modules.csv", n_max = 0))
+read_csv("CEC Modules.csv", col_names = col_names, skip = 3)
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -14,11 +15,13 @@ i7_i5_counts= list.files(pattern = "lima.counts")[[2]]
 i7_5_counts= list.files(pattern = "lima.counts")[[1]]
 df1 = readr::read_table(i7_i5_sum, col_names = F)
 
-df2 = readr::read_table(i7_i5_counts, skip=1) 
+col_names_ <- names(readr::read_table(i7_i5_counts, n_max = 0))
+df2 = readr::read_table(i7_i5_counts, col_names = col_names_ , skip=2) 
 
 df3 = readr::read_table(i7_5_sum, col_names = F)
 
-df4 = readr::read_table(i7_5_counts, skip=1) 
+col_names_ <- names(readr::read_table(i7_5_counts, n_max = 0))
+df4 = readr::read_table(i7_5_counts, col_names = col_names_ , skip=2) 
 
 df2
 df2_s = df2 %>% 
