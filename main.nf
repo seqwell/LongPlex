@@ -27,9 +27,9 @@ workflow {
 
     LIST_HYBRIDS(LIMA_BOTH_END.out.report)
 
-    REMOVE_HYBRIDS(LIMA_BOTH_END.out.bam_unbarcoded, LIST_HYBRIDS.out.hybrids)
+    REMOVE_HYBRIDS(LIMA_BOTH_END.out.bam_unbarcoded_and_barcodes, LIST_HYBRIDS.out.hybrids)
     
-    LIMA_EITHER_END(REMOVE_HYBRIDS.out.bam_filtered)
+    LIMA_EITHER_END(REMOVE_HYBRIDS.out.bam_filtered_and_barcodes)
 
     def bams_by_well_ch = LIMA_BOTH_END.out.bam
         .join(LIMA_EITHER_END.out.bam)

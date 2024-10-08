@@ -2,20 +2,18 @@ process LIMA_BOTH_END {
     tag "${meta.sample_ID}"
 
     input:
-    tuple val(meta), path(bam)
+    tuple val(meta), path(bam), path(i7_barcode), path(i5_barcode)
 
     output:
     tuple val(meta), path('demux_i7_i5/*--*.bam'), emit: bam
     tuple val(meta), path("demux_i7_i5/*lima.counts"), emit: counts
     tuple val(meta), path("demux_i7_i5/*lima.summary"), emit: summary
     tuple val(meta), path("demux_i7_i5/*lima.report"), emit: report
-    tuple val(meta), path("demux_i7_i5/*unbarcoded.bam"), emit: bam_unbarcoded
+    tuple val(meta), path("demux_i7_i5/*unbarcoded.bam"), path(i7_barcode), path(i5_barcode), emit: bam_unbarcoded_and_barcodes
 
     script:
     """
-    # TODO: Remove test checking if bam can be copied
-    cp ${bam} test.bam
-    cat ${meta.i7_barcode} ${meta.i5_barcode} | paste - -  | sort |  tr '\\t' '\\n' > barcode_neighbor.fa
+    cat ${i7_barcode} ${i5_barcode} | paste - -  | sort |  tr '\\t' '\\n' > barcode_neighbor.fa
 
     mkdir -p demux_i7_i5
 

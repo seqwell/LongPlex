@@ -16,14 +16,12 @@
             },
             "i7_barcode": {
                 "errorMessage": "File path for i7 barcode must be provided, cannot contain spaces, and must have the extension '.fa'",
-                "meta": ["i7_barcode"],
                 "format": "file-path",
                 "pattern": "^\\S+\\.fa$",
                 "type": "string"
             },
             "i5_barcode": {
                 "errorMessage": "File path for i5 barcode must be provided, cannot contain spaces, and must have the extension '.fa'",
-                "meta": ["i5_barcode"],
                 "format": "file-path",
                 "pattern": "^\\S+\\.fa$",
                 "type": "string"

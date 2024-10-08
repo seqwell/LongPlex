@@ -2,11 +2,11 @@ process REMOVE_HYBRIDS {
     tag "${meta.sample_ID}"
 
     input:
-    tuple val(meta), path(i5_i7_unbarcoded)
+    tuple val(meta), path(i5_i7_unbarcoded), path(i7_barcode), path(i5_barcode)
     path(hybrid_list)
 
     output:
-    tuple val(meta), path("${meta.sample_ID}.unbarcoded.filtered.bam"), emit: bam_filtered
+    tuple val(meta), path("${meta.sample_ID}.unbarcoded.filtered.bam"), path(i7_barcode), path(i5_barcode), emit: bam_filtered_and_barcodes
     
     script:
     """
