@@ -2,8 +2,7 @@
 library(dplyr)
 library(purrr)
 
-col_names <- names(read_csv("CEC Modules.csv", n_max = 0))
-read_csv("CEC Modules.csv", col_names = col_names, skip = 3)
+
 
 args = commandArgs(trailingOnly=TRUE)
 
