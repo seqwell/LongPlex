@@ -14,11 +14,11 @@ i7_i5_counts= list.files(pattern = "lima.counts")[[2]]
 i7_5_counts= list.files(pattern = "lima.counts")[[1]]
 df1 = readr::read_table(i7_i5_sum, col_names = F)
 
-df2 = readr::read_table(i7_i5_counts)
+df2 = readr::read_table(i7_i5_counts, skip=1) 
 
 df3 = readr::read_table(i7_5_sum, col_names = F)
 
-df4 = readr::read_table(i7_5_counts)
+df4 = readr::read_table(i7_5_counts, skip=1) 
 
 df2
 df2_s = df2 %>% 
