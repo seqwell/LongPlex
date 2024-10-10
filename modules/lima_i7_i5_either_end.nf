@@ -25,7 +25,7 @@ process LIMA_EITHER_END {
         --store-unbarcoded \\
         --split-named \\
         --log-level INFO \\
-        --log-file demux_i7/${meta.sample_ID}.lima.log \\
+        --log-file demux_either_i7_i5/${meta.sample_ID}.lima.log \\
         ${bam} \\
         barcode.fa \\
         demux_either_i7_i5/${meta.sample_ID}.bam
