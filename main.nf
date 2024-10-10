@@ -20,10 +20,10 @@ workflow {
     // Input Parsing
     validateParameters()
     log.info paramsSummaryLog(workflow)
-    def samples_ch = Channel.fromList(samplesheetToList(params.samplesheet, "schemas/input_schema.json"))
+    def pools_ch = Channel.fromList(samplesheetToList(params.pool_sheet, "schemas/input_schema.json"))
 
     // Pipeline
-    LIMA_BOTH_END(samples_ch)
+    LIMA_BOTH_END(pools_ch)
 
     LIST_HYBRIDS(LIMA_BOTH_END.out.report)
 

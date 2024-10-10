@@ -4,5 +4,5 @@ nextflow run \
     -profile docker \
     -c "${PWD}/nextflow.config" \
     main.nf \
-    --samplesheet "${PWD}/tests/samplesheet.csv" \
+    --pool_sheet "${PWD}/tests/pool_sheet.csv" \
     --output  "${PWD}/output/"

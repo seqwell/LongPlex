@@ -1,5 +1,5 @@
 process MERGE_READS {
-    tag "${meta.sample_ID}.${meta.well_ID}"
+    tag "${meta.pool_ID}.${meta.well_ID}"
 
     input:
     tuple val(meta), path(bams)
@@ -12,7 +12,7 @@ process MERGE_READS {
     // TODO: do a more simple merge...
     // TODO: why not output an unmapped BAM?
     """
-    samtools merge ${meta.sample_ID}.${meta.well_ID}.bam ${bams}
-    samtools fastq ${meta.sample_ID}.${meta.well_ID}.bam | bgzip -c > ${meta.sample_ID}.${meta.well_ID}.fastq.gz
+    samtools merge ${meta.pool_ID}.${meta.well_ID}.bam ${bams}
+    samtools fastq ${meta.pool_ID}.${meta.well_ID}.bam | bgzip -c > ${meta.pool_ID}.${meta.well_ID}.fastq.gz
     """
 }
