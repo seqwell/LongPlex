@@ -51,24 +51,24 @@ def initialize() -> str:
 
 
 @dataclass
-class Sample:
-    sample_ID: str
-    sample_path: LatchFile
+class Pool:
+    pool_ID: str
+    pool_path: LatchFile
     i7_barcode: LatchFile
     i5_barcode: LatchFile
 
 
 
 
-samplesheet_construct_samplesheet = metadata._nextflow_metadata.parameters['samplesheet'].samplesheet_constructor
+pool_sheet_construct_samplesheet = metadata._nextflow_metadata.parameters['pool_sheet'].samplesheet_constructor
 
 
 @nextflow_runtime_task(cpu=4, memory=8, storage_gib=100)
-def nextflow_runtime(pvc_name: str, samplesheet: typing.List[Sample], output: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})]) -> None:
+def nextflow_runtime(pvc_name: str, pool_sheet: typing.List[Pool], output: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})]) -> None:
     shared_dir = Path("/nf-workdir")
 
 
-    samplesheet_samplesheet = samplesheet_construct_samplesheet(samplesheet)
+    pool_sheet_samplesheet = pool_sheet_construct_samplesheet(pool_sheet)
 
     ignore_list = [
         "latch",
@@ -111,7 +111,7 @@ def nextflow_runtime(pvc_name: str, samplesheet: typing.List[Sample], output: ty
         "-c",
         "latch.config",
         "-resume",
-        *get_flag('samplesheet', samplesheet_samplesheet),
+        *get_flag('pool_sheet', pool_sheet_samplesheet),
                 *get_flag('output', output)
     ]
 
@@ -176,7 +176,7 @@ def nextflow_runtime(pvc_name: str, samplesheet: typing.List[Sample], output: ty
 
 
 @workflow(metadata._nextflow_metadata)
-def nf_seqwell_longplex_demux(samplesheet: typing.List[Sample], output: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})]) -> None:
+def nf_seqwell_longplex_demux(pool_sheet: typing.List[Pool], output: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})]) -> None:
     """
     seqWell LongPlex Demux
 
@@ -184,5 +184,5 @@ def nf_seqwell_longplex_demux(samplesheet: typing.List[Sample], output: typing_e
     """
 
     pvc_name: str = initialize()
-    nextflow_runtime(pvc_name=pvc_name, samplesheet=samplesheet, output=output)
+    nextflow_runtime(pvc_name=pvc_name, pool_sheet=pool_sheet, output=output)
 
