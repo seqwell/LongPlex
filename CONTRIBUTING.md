@@ -24,17 +24,39 @@ git checkout main
 git pull
 ```
 
-Tag the commit with the version you would like to create:
+Update the version stored in the `version` file.
+See [sematic versioning](https://semver.org/) for guidance on picking an appropriate version number.
+
+Create a commit with the updated version file.
 
 ```console
-git tag D.D.D
+git add version
+git commit -m "chore: update to version D.D.D"
 ```
-
-See [sematic versioning](https://semver.org/) for guidance on picking an appropriate version number.
 
 Register the workflow:
 
 ```console
 latch login
 latch register . --nf-script main.nf --nf-execution-profile docker
+```
+
+Create and tag a commit with the updated Latch files.
+
+```console
+git add .latch/Dockerfile
+git add wf/entrypoint.py
+git commit -m "chore: update Latch resource files"
+```
+
+Tag the commit with the version for traceability:
+
+```console
+git tag D.D.D
+```
+
+Push the commits and tag up to GitHub.
+
+```console
+git push --follow-tags
 ```
