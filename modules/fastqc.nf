@@ -1,5 +1,5 @@
 process FASTQC {
-    tag "${meta.sample_ID}"
+    tag "${meta.pool_ID}"
 
     input:
     tuple val(meta), path(reads)

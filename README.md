@@ -4,13 +4,13 @@ TODO List:
 
 - [X] Get to data output parity with clean repo
 - [X] Get invalid outputs for nf-schema recognized correctly
-- [ ] Make Sample sheet Latch compliant
-- [ ] Put test data on Latch so Latch can use it
+- [X] Make Sample sheet Latch compliant
+- [X] Put test data on Latch so Latch can use it
 - [ ] Cleanup config resource directives? What does latch need.
-- [ ] Create integration test with test data
-- [ ] Create dev environment
+- [X] Create integration test with test data
+- [X] Create dev environment
 - [X] longplexpy Docker? Currently on docker hub, pulls automatically
-- [ ] Single standalone Docker on latch or one per process?
+~~- [ ] Single standalone Docker on latch or one per process?~~ One per process works
 - [ ] Re-write README based on new changes/structure
 
 This is the work flow in nextflow to do demultiplex on pacbio data for seqWell longplex kit.
@@ -22,7 +22,7 @@ The workflow starts with hifi bam file, then a two-step lima process is conducte
  - From the unbarcoded reads from the first lima process, longplexpy tool is used to remove undesired hybrids.
  - second lima demultiplex process using i7 or i5 barcode on the cleaned unbarcoded reads. 
 
-After the two-step lima process, bam files from these two steps are merged from each sample, fastq files are also created for each sample from the merged bam files. 
+After the two-step lima process, bam files from these two steps are merged for each sample within each pool, fastq files are also created for each sample from the merged bam files. 
 The output from this pipeline has lima output, demultiplex summary, and also fastqc report for the merged bams for each sample.
 
 ![Fig1. demultiplex workflow](./docs/demux_workflow.png)
@@ -45,21 +45,21 @@ nextflow run \
     -profile docker \
     main.nf \
     -c nextflow.config \
-    --samplesheet tests/samplesheet.csv \
+    --pool_sheet tests/pool_sheet.csv \
     --output ${PWD}/test_output \
     -with-report \
     -with-trace \
     -resume
 ```
 
-The required inputs are *samplesheet* and *output*.
+The required inputs are *pool_sheet* and *output*.
 
-## samplesheet requirement: 
-The samplesheet is in csv format. There are four columns for the samplesheet: sample_ID, sample_path, i7_barcode and i5_barcode.
+## pool_sheet requirement: 
+The pool_sheet is in csv format. There are four columns for the pool_sheet: pool_ID, pool_path, i7_barcode and i5_barcode.
 
- - *sample_ID*: You can have only letters and numbers in sample_ID.
- Please avoid having underline(_) and dash (-) and dot(.) in the sample_ID.
- - *sample_path*: The sample_path can be local or a link to s3 bucket.
+ - *pool_ID*: You can have only letters and numbers in pool_ID.
+ Please avoid having underline(_) and dash (-) and dot(.) in the pool_ID.
+ - *pool_path*: The pool_path can be local or a link to s3 bucket.
  If it is a link to s3 bucket, please make sure to fill in the correct credentials in the nextflow.config file.
  - *i7_barcode, i5_barcode*: The barcodes are in the barcode folder.
  For early access users, please use barcode set3.

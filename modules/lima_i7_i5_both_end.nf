@@ -1,5 +1,5 @@
 process LIMA_BOTH_END {
-    tag "${meta.sample_ID}"
+    tag "${meta.pool_ID}"
 
     input:
     tuple val(meta), path(bam), path(i7_barcode), path(i5_barcode)
@@ -26,12 +26,12 @@ process LIMA_BOTH_END {
         --store-unbarcoded \\
         --split-named \\
         --log-level INFO \\
-        --log-file demux_i7_i5/${meta.sample_ID}.lima.log \\
+        --log-file demux_i7_i5/${meta.pool_ID}.lima.log \\
         ${bam} \\
         barcode_neighbor.fa \\
-        demux_i7_i5/${meta.sample_ID}.bam
+        demux_i7_i5/${meta.pool_ID}.bam
 
-    mv demux_i7_i5/${meta.sample_ID}.lima.counts demux_i7_i5/i7_i5_${meta.sample_ID}.lima.counts
-    mv demux_i7_i5/${meta.sample_ID}.lima.summary demux_i7_i5/i7_i5_${meta.sample_ID}.lima.summary
+    mv demux_i7_i5/${meta.pool_ID}.lima.counts demux_i7_i5/i7_i5_${meta.pool_ID}.lima.counts
+    mv demux_i7_i5/${meta.pool_ID}.lima.summary demux_i7_i5/i7_i5_${meta.pool_ID}.lima.summary
     """
 }

@@ -1,5 +1,5 @@
 process LIMA_EITHER_END {
-    tag "${meta.sample_ID}"
+    tag "${meta.pool_ID}"
 
     input:
     tuple val(meta), path(bam), path(i7_barcode), path(i5_barcode)
@@ -25,12 +25,12 @@ process LIMA_EITHER_END {
         --store-unbarcoded \\
         --split-named \\
         --log-level INFO \\
-        --log-file demux_either_i7_i5/${meta.sample_ID}.lima.log \\
+        --log-file demux_either_i7_i5/${meta.pool_ID}.lima.log \\
         ${bam} \\
         barcode.fa \\
-        demux_either_i7_i5/${meta.sample_ID}.bam
+        demux_either_i7_i5/${meta.pool_ID}.bam
 
-    mv demux_either_i7_i5/${meta.sample_ID}.lima.counts demux_either_i7_i5/i7_5_${meta.sample_ID}.lima.counts
-    mv demux_either_i7_i5/${meta.sample_ID}.lima.summary demux_either_i7_i5/i7_5_${meta.sample_ID}.lima.summary
+    mv demux_either_i7_i5/${meta.pool_ID}.lima.counts demux_either_i7_i5/i7_5_${meta.pool_ID}.lima.counts
+    mv demux_either_i7_i5/${meta.pool_ID}.lima.summary demux_either_i7_i5/i7_5_${meta.pool_ID}.lima.summary
     """
 }

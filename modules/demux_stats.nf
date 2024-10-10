@@ -1,5 +1,5 @@
 process DEMUX_STATS {
-    tag "${meta.sample_ID}"
+    tag "${meta.pool_ID}"
 
     input:
     tuple val(meta), path(stat)
@@ -9,6 +9,6 @@ process DEMUX_STATS {
 
     script:
     """
-    create_demux_summary.R ${meta.sample_ID}
+    create_demux_summary.R ${meta.pool_ID}
     """
 }

@@ -2,13 +2,13 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "items": {
         "properties": {
-            "sample_ID": {
-                "errorMessage": "Sample ID must be provided and cannot contain spaces, can only contain numbers and letters",
-                "meta": ["sample_ID"],
+            "pool_ID": {
+                "errorMessage": "Pool ID must be provided and cannot contain spaces, can only contain numbers and letters",
+                "meta": ["pool_ID"],
                 "pattern": "^[a-zA-Z0-9]*$",
                 "type": "string"
             },
-            "sample_path": {
+            "pool_path": {
                 "errorMessage": "HiFi BAM file path must be provided, cannot contain spaces, and must have the extension '.bam'",
                 "format": "file-path",
                 "pattern": "^\\S+\\.bam$",
@@ -28,8 +28,8 @@
             }
         },
         "required": [
-            "sample_ID",
-            "sample_path",
+            "pool_ID",
+            "pool_path",
             "i7_barcode",
             "i5_barcode"
         ],

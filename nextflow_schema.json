@@ -12,11 +12,11 @@
             "description": "Define the input and output data locations.",
             "fa_icon": "fas fa-terminal",
             "properties": {
-                "samplesheet": {
-                    "description": "Comma-separated sample sheet.",
+                "pool_sheet": {
+                    "description": "Comma-separated pool sheet.",
                     "fa_icon": "fas fa-file-csv",
                     "format": "file-path",
-                    "help_text": "CSV file containing samples with headers: sample_ID, sample_path, i7_barcode, i5_barcode",
+                    "help_text": "CSV file containing pools with headers: pool_ID, pool_path, i7_barcode, i5_barcode",
                     "mimetype": "text/csv",
                     "pattern": "^\\S+\\.(csv)$",
                     "schema": "schemas/input_schema.json",
@@ -30,7 +30,7 @@
                 }
             },
             "required": [
-                "samplesheet",
+                "pool_sheet",
                 "output"
             ],
             "type": "object"
