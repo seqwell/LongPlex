@@ -12,3 +12,29 @@ The integration tests can be run with
 ```bash
 pytest --tag integration
 ```
+
+## Creating a New Release
+
+In your local copy of the repository checkout the commit you wish to use for the next release.
+
+Typically, this will be the latest commit on main.
+
+```console
+git checkout main
+git pull
+```
+
+Tag the commit with the version you would like to create:
+
+```console
+git tag D.D.D
+```
+
+See [sematic versioning](https://semver.org/) for guidance on picking an appropriate version number.
+
+Register the workflow:
+
+```console
+latch login
+latch register . --nf-script main.nf --nf-execution-profile docker
+```
