@@ -203,9 +203,11 @@ def nf_seqwell_longplex_demux(
 
     This workflow is for demultiplexing seqWell LongPlex data from PacBio BAM files.
 
-    Required resources:
-        - PacBio demultiplexed BAM files where each BAM represents a single LongPlex pool
-        - seqWell P7/i7 and P5/i5 adapter sequences in fasta format for the provided LongPlex pool(s)
+    Required resources: 
+
+    - PacBio demultiplexed BAM files where each BAM represents a single LongPlex pool
+
+    - seqWell P7/i7 and P5/i5 adapter sequences in fasta format for the provided LongPlex pool(s).
 
     """
 
