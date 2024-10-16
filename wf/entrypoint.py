@@ -51,6 +51,16 @@ def initialize() -> str:
 
 @dataclass
 class Pool:
+    """
+    NOTE: This class is copied from latch_metadata/parameters.py
+    Describes a seqWell Longplex sequencing pool
+
+    Attributes:
+        pool_ID: Name of the sequencing pool
+        pool_path: Path to unmapped BAM file
+        i7_barcode: Path to i7 barcodes in fasta format
+        i5_barcode: Path to i5 barcodes in fasta format 
+    """
     pool_ID: str
     pool_path: LatchFile
     i7_barcode: LatchFile
