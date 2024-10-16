@@ -27,6 +27,7 @@ meta = Path("latch_metadata") / "__init__.py"
 import_module_by_path(meta)
 import latch_metadata
 
+
 @custom_task(cpu=0.25, memory=0.5, storage_gib=1)
 def initialize() -> str:
     token = os.environ.get("FLYTE_INTERNAL_EXECUTION_ID")
@@ -58,15 +59,18 @@ class Pool:
     i5_barcode: LatchFile
 
 
-
-
-pool_sheet_construct_samplesheet = metadata._nextflow_metadata.parameters['pool_sheet'].samplesheet_constructor
+pool_sheet_construct_samplesheet = metadata._nextflow_metadata.parameters[
+    "pool_sheet"
+].samplesheet_constructor
 
 
 @nextflow_runtime_task(cpu=4, memory=8, storage_gib=100)
-def nextflow_runtime(pvc_name: str, pool_sheet: typing.List[Pool], output: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})]) -> None:
+def nextflow_runtime(
+    pvc_name: str,
+    pool_sheet: typing.List[Pool],
+    output: typing_extensions.Annotated[LatchDir, FlyteAnnotation({"output": True})],
+) -> None:
     shared_dir = Path("/nf-workdir")
-
 
     pool_sheet_samplesheet = pool_sheet_construct_samplesheet(pool_sheet)
 
@@ -91,14 +95,14 @@ def nextflow_runtime(pvc_name: str, pool_sheet: typing.List[Pool], output: typin
         dirs_exist_ok=True,
     )
 
-    profile_list = ['docker']
+    profile_list = ["docker"]
     if False:
         profile_list.extend([p.value for p in execution_profiles])
 
     if len(profile_list) == 0:
         profile_list.append("standard")
 
-    profiles = ','.join(profile_list)
+    profiles = ",".join(profile_list)
 
     cmd = [
         "/root/nextflow",
@@ -111,12 +115,12 @@ def nextflow_runtime(pvc_name: str, pool_sheet: typing.List[Pool], output: typin
         "-c",
         "latch.config",
         "-resume",
-        *get_flag('pool_sheet', pool_sheet_samplesheet),
-                *get_flag('output', output)
+        *get_flag("pool_sheet", pool_sheet_samplesheet),
+        *get_flag("output", output),
     ]
 
     print("Launching Nextflow Runtime")
-    print(' '.join(cmd))
+    print(" ".join(cmd))
     print(flush=True)
 
     failed = False
@@ -146,26 +150,34 @@ def nextflow_runtime(pvc_name: str, pool_sheet: typing.List[Pool], output: typin
             if name is None:
                 print("Skipping logs upload, failed to get execution name")
             else:
-                remote = LPath(urljoins("latch:///your_log_dir/nf_seqwell_longplex_demux", name, "nextflow.log"))
+                remote = LPath(
+                    urljoins(
+                        "latch:///your_log_dir/nf_seqwell_longplex_demux",
+                        name,
+                        "nextflow.log",
+                    )
+                )
                 print(f"Uploading .nextflow.log to {remote.path}")
                 remote.upload_from(nextflow_log)
 
         print("Computing size of workdir... ", end="")
         try:
             result = subprocess.run(
-                ['du', '-sb', str(shared_dir)],
+                ["du", "-sb", str(shared_dir)],
                 check=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                timeout=5 * 60
+                timeout=5 * 60,
             )
 
             size = int(result.stdout.split()[0])
             report_nextflow_used_storage(size)
             print(f"Done. Workdir size: {size / 1024 / 1024 / 1024: .2f} GiB")
         except subprocess.TimeoutExpired:
-            print("Failed to compute storage size: Operation timed out after 5 minutes.")
+            print(
+                "Failed to compute storage size: Operation timed out after 5 minutes."
+            )
         except subprocess.CalledProcessError as e:
             print(f"Failed to compute storage size: {e.stderr}")
         except Exception as e:
@@ -176,7 +188,10 @@ def nextflow_runtime(pvc_name: str, pool_sheet: typing.List[Pool], output: typin
 
 
 @workflow(metadata._nextflow_metadata)
-def nf_seqwell_longplex_demux(pool_sheet: typing.List[Pool], output: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})]) -> None:
+def nf_seqwell_longplex_demux(
+    pool_sheet: typing.List[Pool],
+    output: typing_extensions.Annotated[LatchDir, FlyteAnnotation({"output": True})],
+) -> None:
     """
     seqWell LongPlex Demux
 
@@ -185,4 +200,3 @@ def nf_seqwell_longplex_demux(pool_sheet: typing.List[Pool], output: typing_exte
 
     pvc_name: str = initialize()
     nextflow_runtime(pvc_name=pvc_name, pool_sheet=pool_sheet, output=output)
-
