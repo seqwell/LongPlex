@@ -13,6 +13,10 @@ The integration tests can be run with
 pytest --tag integration
 ```
 
+## Before Release
+
+Before creating a new release, confirm `wf/entrypoint` has been updated to pass any newly added parameters to the underlying workflow.
+
 ## Creating a New Release
 
 In your local copy of the repository checkout the commit you wish to use for the next release.
@@ -38,8 +42,10 @@ Register the workflow:
 
 ```console
 latch login
-latch register . --nf-script main.nf --nf-execution-profile docker
+latch register .
 ```
+
+[!WARNING]: Do not run `latch register . -nf-script main.nf --nf-execution-profile docker` as this will overwrite the custom `wf/entrypoint.py` file.
 
 Create and tag a commit with the updated Latch files.
 
