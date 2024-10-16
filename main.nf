@@ -56,7 +56,7 @@ workflow {
     MULTIQC(FASTQC.out.archive.collect().ifEmpty([]))
 
     // Pipeline Cleanup
-    workflow.onComplete  = {
+    workflow.onComplete = {
         println "Project output directory: ${workflow.projectDir}/${params.output}"
         println "Pipeline completed at: $workflow.complete"
         println "Pipeline completed time duration: $workflow.duration"
@@ -64,7 +64,7 @@ workflow {
         println "Execution status: ${ workflow.success ? 'OK' : 'failed' }"
     }
 
-    workflow.onError {
+    workflow.onError = {
         println "Error: Pipeline execution stopped with the following message: ${workflow.errorMessage}"
     }
 }
