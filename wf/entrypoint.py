@@ -1,6 +1,5 @@
 import sys
 from dataclasses import dataclass
-from enum import Enum
 import os
 import subprocess
 import requests
@@ -12,7 +11,7 @@ import typing_extensions
 from latch.resources.workflow import workflow
 from latch.resources.tasks import nextflow_runtime_task, custom_task
 from latch.types.file import LatchFile
-from latch.types.directory import LatchDir, LatchOutputDir
+from latch.types.directory import LatchDir
 from latch.ldata.path import LPath
 from latch.executions import report_nextflow_used_storage
 from latch_cli.nextflow.workflow import get_flag
@@ -25,7 +24,6 @@ from latch_cli.services.register.utils import import_module_by_path
 
 meta = Path("latch_metadata") / "__init__.py"
 import_module_by_path(meta)
-import latch_metadata
 
 
 @custom_task(cpu=0.25, memory=0.5, storage_gib=1)
@@ -96,8 +94,6 @@ def nextflow_runtime(
     )
 
     profile_list = ["docker"]
-    if False:
-        profile_list.extend([p.value for p in execution_profiles])
 
     if len(profile_list) == 0:
         profile_list.append("standard")
