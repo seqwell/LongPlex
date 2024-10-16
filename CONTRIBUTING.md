@@ -51,7 +51,6 @@ Create and tag a commit with the updated Latch files.
 
 ```console
 git add .latch/Dockerfile
-git add wf/entrypoint.py
 git commit -m "chore: update Latch resource files"
 ```
 
