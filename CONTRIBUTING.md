@@ -19,6 +19,8 @@ Before creating a new release, confirm `wf/entrypoint` has been updated to pass 
 
 ## Creating a New Release
 
+### Update the Version
+
 In your local copy of the repository checkout the commit you wish to use for the next release.
 
 Typically, this will be the latest commit on main.
@@ -38,7 +40,7 @@ git add version
 git commit -m "chore: update to version D.D.D"
 ```
 
-Register the workflow:
+### Register the Workflow
 
 ```console
 latch login
@@ -48,7 +50,7 @@ latch register .
 > [!WARNING]
 > Do not run `latch register . -nf-script main.nf --nf-execution-profile docker` as this will overwrite the custom `wf/entrypoint.py` file.
 
-Create and tag a commit with the updated Latch files.
+### Commit and Push Release to GitHub
 
 ```console
 git add .latch/Dockerfile
@@ -66,3 +68,19 @@ Push the commits and tag up to GitHub.
 ```console
 git push --follow-tags
 ```
+
+### Promote the Registered Workflow on Latch
+
+On [Latch](https://console.latch.bio/workflows/), select the "seqWell LongPlex Demux" workflow.
+Select the "Development" tab.
+Expand the dropdown for the appropriate version.
+Create an alias for the version, `vD.D.D`.
+Fill in the "Version Notes" with a list of changes made since the previous release.
+Select "Release".
+Select "Make Public".
+Select "Confirm".
+
+### Switch the Main Branch version to a dev version
+
+Follow the instructions under "Update the Version" but select a dev version, `D.D.D-dev`.
+Push the change to GitHub.
