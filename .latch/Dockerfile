@@ -1,9 +1,9 @@
 # DO NOT CHANGE
-FROM 812206152185.dkr.ecr.us-west-2.amazonaws.com/latch-base-nextflow:v2.0.0
+from 812206152185.dkr.ecr.us-west-2.amazonaws.com/latch-base-nextflow:v2.0.0
 
-WORKDIR /tmp/docker-build/work/
+workdir /tmp/docker-build/work/
 
-SHELL [ \
+shell [ \
     "/usr/bin/env", "bash", \
     "-o", "errexit", \
     "-o", "pipefail", \
@@ -14,26 +14,26 @@ SHELL [ \
     "-O", "shift_verbose", \
     "-c" \
 ]
-ENV TZ='Etc/UTC'
-ENV LANG='en_US.UTF-8'
+env TZ='Etc/UTC'
+env LANG='en_US.UTF-8'
 
-ARG DEBIAN_FRONTEND=noninteractive
+arg DEBIAN_FRONTEND=noninteractive
 
 # Latch SDK
 # DO NOT REMOVE
-RUN pip install latch==2.52.4
-RUN mkdir /opt/latch
+run pip install latch==2.52.4
+run mkdir /opt/latch
 
 
 # Copy workflow data (use .dockerignore to skip files)
 
-COPY . /root/
+copy . /root/
 
 
 # Latch workflow registration metadata
 # DO NOT CHANGE
-ARG tag
+arg tag
 # DO NOT CHANGE
-ENV FLYTE_INTERNAL_IMAGE $tag
+env FLYTE_INTERNAL_IMAGE $tag
 
-WORKDIR /root
+workdir /root
