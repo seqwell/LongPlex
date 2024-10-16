@@ -207,7 +207,7 @@ def nf_seqwell_longplex_demux(
 
     - PacBio demultiplexed BAM files where each BAM represents a single LongPlex pool
 
-    - seqWell P7/i7 and P5/i5 adapter sequences in fasta format for the provided LongPlex pool(s).
+    - seqWell P7/i7 and P5/i5 adapter sequences in fasta format for the provided LongPlex pool(s)
 
     """
 
