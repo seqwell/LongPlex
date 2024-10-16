@@ -45,7 +45,8 @@ latch login
 latch register .
 ```
 
-[!WARNING]: Do not run `latch register . -nf-script main.nf --nf-execution-profile docker` as this will overwrite the custom `wf/entrypoint.py` file.
+> [!WARNING]
+> Do not run `latch register . -nf-script main.nf --nf-execution-profile docker` as this will overwrite the custom `wf/entrypoint.py` file.
 
 Create and tag a commit with the updated Latch files.
 
