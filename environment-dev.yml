@@ -4,10 +4,10 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - bioconda::nextflow=24.04.1
+  - bioconda::nextflow=23.10.1
   - conda-forge::python=3.11.0
-  - conda-forge::pytest=8.3.3
-  - conda-forge::pip=24.2
+  - conda-forge::pytest=7.2.0
+  - conda-forge::pip=22.3.1
   - pip:
-    - pytest-workflow==2.1.0
+    - pytest-workflow==2.0.1
     - latch==2.53.0
