@@ -13,7 +13,7 @@ The pipeline starts with HiFi bam files.
  - The `DEMUX_STATS` process generates a summary of the demultiplexing steps.
  - `FASTQC` and `MULTIQC` are used to generate summary metrics for the reads assigned to each sample in the pool
 
-The final output from this pipeline includes Lima output files, a demultiplexing summary, a fastqc report for the merged bams for each sample, and a multiqc report collating the fastqc results.
+The final output from this pipeline includes Lima output files, demultiplexed bam and fastq files, a demultiplexing summary, and a multiqc report collating fastqc results.
 
 ![Fig1. LongPlex Workflow](./docs/LongPlex_Workflow.png)
 
@@ -98,35 +98,35 @@ nextflow run \
 test_output
 ├── bc1015
 │   ├── demux_summary
-│   │   └── bc1015_demux_report.csv
+│   │   └── bc1015_demux_report.csv                          # Summary of demultiplexing results
 │   ├── hybrids
-│   │   ├── bc1015.hybrid_list.txt
-│   │   └── bc1015.unbarcoded.filtered.bam
+│   │   ├── bc1015.hybrid_list.txt                           # List of reads with mismatched i5 & i7 barcode sequences
+│   │   └── bc1015.unbarcoded.filtered.bam                   # Reads that did not demultiplex in step LIMA_BOTH_ENDS with hybrid reads removed
 │   ├── lima_out
-│   │   ├── demux_either_i7_i5
-│   │   │   ├── bc1015.[BARCODE_ID]--[BARCODE_ID].bam
+│   │   ├── demux_either_i7_i5                               # Demultiplexing results using a single barcode
+│   │   │   ├── bc1015.[BARCODE_ID]--[BARCODE_ID].bam        # Reads demultiplexed based on a single barcode
 │   │   │   ├── ...
-│   │   │   ├── bc1015.unbarcoded.bam
-│   │   │   ├── i7_5_bc1015.lima.counts
-│   │   │   └── i7_5_bc1015.lima.summary
-│   │   └── demux_i7_i5
-│   │       ├── bc1015.lima.report
-│   │       ├── bc1015.[P5_BARCODE_ID]--[P7_BARCODE_ID].bam
+│   │   │   ├── bc1015.unbarcoded.bam                        # Reads that failed to demultiplex
+│   │   │   ├── i7_5_bc1015.lima.counts                      # Counts of each observed barcode
+│   │   │   └── i7_5_bc1015.lima.summary                     # Summary of lima read filtering results
+│   │   └── demux_i7_i5                                      # Demultiplexing results using i5 and i7 sequences
+│   │       ├── bc1015.lima.report                           # lima findings for every read
+│   │       ├── bc1015.[P5_BARCODE_ID]--[P7_BARCODE_ID].bam  # Reads demultiplexed based on matching i5 and i7 sequences
 │   │       ├── ...
-│   │       ├── bc1015.unbarcoded.bam
-│   │       ├── i7_i5_bc1015.lima.counts
-│   │       └── i7_i5_bc1015.lima.summary
+│   │       ├── bc1015.unbarcoded.bam                        # Reads that did not demultiplex in the first lima process
+│   │       ├── i7_i5_bc1015.lima.counts                     # Counts of each observed barcode
+│   │       └── i7_i5_bc1015.lima.summary                    # Summary of lima read filtering results
 │   ├── merged_bam
-│   │   ├── bc1015.[BARCODE_WELL].bam
+│   │   ├── bc1015.[BARCODE_WELL].bam                        # Merged bam file for specific barcode well
 │   │   └── ...
 │   └── merged_fastq
-│       ├── bc1015.[BARCODE_WELL].fastq.gz
+│       ├── bc1015.[BARCODE_WELL].fastq.gz                   # Merged fastq file for specific barcode well
 │       └── ...
 ├── logs
-│   ├── execution_report_[DATE-TIME-STAMP].html
-│   ├── execution_timeline_[DATE-TIME-STAMP].html
-│   ├── execution_trace_[DATE-TIME-STAMP].txt
-│   └── pipeline_dag_[DATE-TIME-STAMP].html
+│   ├── execution_report_[DATE-TIME-STAMP].html              # Nextflow execution report
+│   ├── execution_timeline_[DATE-TIME-STAMP].html            # Nextflow execution timeline
+│   ├── execution_trace_[DATE-TIME-STAMP].txt                # Nextflow execution trace
+│   └── pipeline_dag_[DATE-TIME-STAMP].html                  # Nextflow pipeline DAG
 └── multiqc
-    └── [DATE-TIME-STAMP]_multiqc_report.html
+    └── [DATE-TIME-STAMP]_multiqc_report.html                # MultiQC report including FASTQC results
 ```
