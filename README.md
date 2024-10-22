@@ -50,12 +50,12 @@ There are four required columns:
  For early access users, please use barcode set3.
  Please use barcode set1 if you bought the kits after the launch.
 
-## output
+### output
 
 The output can be local (an absolute path or a relative path) or an AWS S3 URI.
 If it is an AWS S3 URI, please make sure to [set your security credentials appropriately](https://www.nextflow.io/docs/latest/amazons3.html#security-credentials).
 
-# Profiles:
+## Profiles:
 
 Several profiles are available and can be selected with the `-profile` option at the command line.
 
@@ -64,7 +64,7 @@ Several profiles are available and can be selected with the `-profile` option at
  - docker
  - singularity
 
-# Example Command
+## Example Command
 
 A minimal execution might look like:
 
