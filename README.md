@@ -1,8 +1,6 @@
 # seqWell LongPlex Demultiplex Nextflow Pipeline
 
-- [ ] Re-write README based on new changes/structure
-
-This is the Nextflow pipeline to demultiplex PacBio data for seqWell LongPlex Long Fragment Multiplexing Kit.
+This is the Nextflow pipeline to demultiplex PacBio data for the seqWell LongPlex Long Fragment Multiplexing Kit.
 The pipeline uses [Lima](https://lima.how/) for demultiplexing and uses longplexpy tools for data filtering.
 The pipeline is as shown in the image below.
 The pipeline starts with HiFi bam files.
