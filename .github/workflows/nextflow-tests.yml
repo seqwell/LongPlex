@@ -1,0 +1,31 @@
+name: Nextflow Workflow Tests
+
+on: [push]
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache conda
+        uses: actions/cache@v4
+        env:
+          CACHE_NUMBER: 1 # Increase this number to invalidate the current cache.
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment-dev.yml') }}
+
+      - name: Set up miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: longplex-nf-dev
+          auto-update-conda: true
+          channel-priority: true
+          environment-file: environment-dev.yml
+          miniforge-version: latest
+          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
+
+      - name: Test the Nextflow workflow
+        shell: bash -l {0}
+        run: pytest --tag integration --workflow-threads $(nproc)
