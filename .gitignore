@@ -1,6 +1,5 @@
 .nextflow*
 output/
-runme
 work/
 __pycache__
 .logs

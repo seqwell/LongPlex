@@ -3,12 +3,14 @@
 A development environment for running the pipeline and executing tests can be created with [`mamba`](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html).
 
 After installing mamba, the development environment can be created and activated with:
+
 ```bash
 mamba env create --file environment-dev.yml
 mamba activate longplex-nf-dev
 ```
 
-The integration tests can be run with
+The integration tests can be run with:
+
 ```bash
 pytest --tag integration
 ```
@@ -33,11 +35,11 @@ git pull
 Update the version stored in the `version` file.
 See [sematic versioning](https://semver.org/) for guidance on picking an appropriate version number.
 
-Create a commit with the updated version file.
+Create a commit with the updated version file where `#.#.#` is the newly picked semantic version.
 
 ```console
 git add version
-git commit -m "chore: update to version D.D.D"
+git commit -m "chore: update to version #.#.#"
 ```
 
 ### Register the Workflow
@@ -60,7 +62,7 @@ git commit -m "chore: update Latch resource files"
 Tag the commit with the version for traceability:
 
 ```console
-git tag D.D.D
+git tag #.#.#
 ```
 
 Push the commits and tag up to GitHub.
@@ -71,16 +73,16 @@ git push --follow-tags
 
 ### Promote the Registered Workflow on Latch
 
-On [Latch](https://console.latch.bio/workflows/), select the "seqWell LongPlex Demux" workflow.
-Select the "Development" tab.
-Expand the dropdown for the appropriate version.
-Create an alias for the version, `vD.D.D`.
-Fill in the "Version Notes" with a list of changes made since the previous release.
-Select "Release".
-Select "Make Public".
-Select "Confirm".
+1. On [Latch](https://console.latch.bio/workflows/), select the "seqWell LongPlex Demux" workflow.
+2. Select the "Development" tab.
+3. Expand the dropdown for the appropriate version.
+4. Create an alias for the version, `v#.#.#`.
+5. Fill in the "Version Notes" with a list of changes made since the previous release.
+6. Select "Release".
+7. Select "Make Public".
+8. Select "Confirm".
 
-### Switch the Main Branch version to a dev version
+### Switch the Main Branch version to a Dev Version
 
-Follow the instructions under "Update the Version" but select a dev version, `D.D.D-dev`.
+Follow the instructions under "Update the Version" but specify a dev version, `#.#.#-dev`.
 Push the change to GitHub.

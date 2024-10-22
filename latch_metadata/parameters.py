@@ -1,15 +1,10 @@
 
 from dataclasses import dataclass
 import typing
-import typing_extensions
-from pathlib import Path
-import csv
-
-from flytekit.core.annotation import FlyteAnnotation
 
 from latch.types.metadata import NextflowParameter
 from latch.types.file import LatchFile
-from latch.types.directory import LatchDir, LatchOutputDir
+from latch.types.directory import LatchOutputDir
 
 POOL_ID: str = "pool_ID"
 POOL_PATH: str = "pool_path"
@@ -18,13 +13,13 @@ I5_PATH: str = "i5_barcode"
 
 @dataclass(frozen=True)
 class Pool:
-    """Describes a seqWell Longplex sequencing pool
+    """Describes a seqWell LongPlex sequencing pool
 
     Attributes:
         pool_ID: Name of the sequencing pool
         pool_path: Path to unmapped BAM file
-        i7_barcode: Path to i7 barcodes in fasta format
-        i5_barcode: Path to i5 barcodes in fasta format 
+        i7_barcode: Path to i7 barcodes in FASTA format
+        i5_barcode: Path to i5 barcodes in FASTA format
     """
     pool_ID: str
     pool_path: LatchFile

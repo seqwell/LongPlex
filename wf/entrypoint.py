@@ -53,13 +53,13 @@ def initialize() -> str:
 class Pool:
     """
     NOTE: This class is copied from latch_metadata/parameters.py
-    Describes a seqWell Longplex sequencing pool
+    Describes a seqWell LongPlex sequencing pool
 
     Attributes:
         pool_ID: Name of the sequencing pool
         pool_path: Path to unmapped BAM file
-        i7_barcode: Path to i7 barcodes in fasta format
-        i5_barcode: Path to i5 barcodes in fasta format 
+        i7_barcode: Path to i7 barcodes in FASTA format
+        i5_barcode: Path to i5 barcodes in FASTA format
     """
     pool_ID: str
     pool_path: LatchFile
@@ -205,9 +205,9 @@ def nf_seqwell_longplex_demux(
 
     Required resources: 
 
-    - PacBio demultiplexed BAM files where each BAM represents a single LongPlex pool
+    - PacBio demultiplexed HiFi BAM files where each BAM represents a single LongPlex pool
 
-    - seqWell P7/i7 and P5/i5 adapter sequences in fasta format for the provided LongPlex pool(s)
+    - seqWell P7/i7 and P5/i5 adapter sequences in FASTA format for the provided LongPlex pool(s)
 
     """
 

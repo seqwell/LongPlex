@@ -17,12 +17,14 @@ def infer_well(path) {
 }
 
 workflow {
-    // Input Parsing
+    // Input Parsing ///////////////////////////////////////////////////////////////////////////////
+
     validateParameters()
     log.info paramsSummaryLog(workflow)
     def pools_ch = Channel.fromList(samplesheetToList(params.pool_sheet, "schemas/input_schema.json"))
 
-    // Pipeline
+    // Pipeline ////////////////////////////////////////////////////////////////////////////////////
+
     LIMA_BOTH_END(pools_ch)
 
     LIST_HYBRIDS(LIMA_BOTH_END.out.report)
@@ -46,8 +48,8 @@ workflow {
 
     def stat_ch = LIMA_BOTH_END.out.counts
         .mix(LIMA_EITHER_END.out.counts, LIMA_BOTH_END.out.summary, LIMA_EITHER_END.out.summary)
-        .groupTuple(by: 0) 
-        .map {meta, stats -> tuple(meta, stats.flatten())}
+        .groupTuple(by: 0)
+        .map { meta, stats -> tuple(meta, stats.flatten()) }
 
     DEMUX_STATS(stat_ch)
 
@@ -55,7 +57,8 @@ workflow {
 
     MULTIQC(FASTQC.out.archive.collect().ifEmpty([]))
 
-    // Pipeline Cleanup
+    // Pipeline Cleanup ////////////////////////////////////////////////////////////////////////////
+
     workflow.onComplete = {
         println "Project output directory: ${workflow.projectDir}/${params.output}"
         println "Pipeline completed at: $workflow.complete"
