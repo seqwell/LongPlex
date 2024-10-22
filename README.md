@@ -17,7 +17,7 @@ The pipeline starts with HiFi bam files.
 
 The final output from this pipeline includes Lima output files, a demultiplexing summary, a fastqc report for the merged bams for each sample, and a multiqc report collating the fastqc results.
 
-![Fig1. demultiplex workflow](./docs/demux_workflow.png)
+![Fig1. LongPlex Workflow](./docs/LongPlex_Workflow.png)
 
 ## Docker Containers
 
