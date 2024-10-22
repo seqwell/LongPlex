@@ -1,0 +1,141 @@
+- name: LongPlex Integration Test
+  tags:
+    - integration
+  command: bash tests/run_longplex_integration.sh
+  files:
+    - path: output/bc1015/demux_summary/bc1015_demux_report.csv
+    - path: output/bc1015/hybrids/bc1015.hybrid_list.txt
+    - path: output/bc1015/hybrids/bc1015.unbarcoded.filtered.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_A01_P7--seqwell_UDI1_A01_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_A02_P5--seqwell_UDI1_A02_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_A02_P7--seqwell_UDI1_A02_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_A03_P5--seqwell_UDI1_A03_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_A03_P7--seqwell_UDI1_A03_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_B01_P5--seqwell_UDI1_B01_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_B01_P7--seqwell_UDI1_B01_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_B02_P5--seqwell_UDI1_B02_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_B02_P7--seqwell_UDI1_B02_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_B03_P5--seqwell_UDI1_B03_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_B03_P7--seqwell_UDI1_B03_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_C01_P5--seqwell_UDI1_C01_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_C01_P7--seqwell_UDI1_C01_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_C02_P5--seqwell_UDI1_C02_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_C02_P7--seqwell_UDI1_C02_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_C03_P5--seqwell_UDI1_C03_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_C03_P7--seqwell_UDI1_C03_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_D01_P5--seqwell_UDI1_D01_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_D01_P7--seqwell_UDI1_D01_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_D02_P5--seqwell_UDI1_D02_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_D02_P7--seqwell_UDI1_D02_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_D03_P7--seqwell_UDI1_D03_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_E01_P5--seqwell_UDI1_E01_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_E01_P7--seqwell_UDI1_E01_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_E02_P5--seqwell_UDI1_E02_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_E02_P7--seqwell_UDI1_E02_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_E03_P5--seqwell_UDI1_E03_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_E03_P7--seqwell_UDI1_E03_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_F01_P5--seqwell_UDI1_F01_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_F01_P7--seqwell_UDI1_F01_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_F02_P5--seqwell_UDI1_F02_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_F02_P7--seqwell_UDI1_F02_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_F03_P5--seqwell_UDI1_F03_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_F03_P7--seqwell_UDI1_F03_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_G01_P5--seqwell_UDI1_G01_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_G01_P7--seqwell_UDI1_G01_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_G02_P5--seqwell_UDI1_G02_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_G02_P7--seqwell_UDI1_G02_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_G03_P5--seqwell_UDI1_G03_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_G03_P7--seqwell_UDI1_G03_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_H01_P5--seqwell_UDI1_H01_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_H01_P7--seqwell_UDI1_H01_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_H02_P5--seqwell_UDI1_H02_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_H02_P7--seqwell_UDI1_H02_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_H03_P5--seqwell_UDI1_H03_P5.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.seqwell_UDI1_H03_P7--seqwell_UDI1_H03_P7.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.unbarcoded.bam
+    - path: output/bc1015/lima_out/demux_either_i7_i5/i7_5_bc1015.lima.counts
+    - path: output/bc1015/lima_out/demux_either_i7_i5/i7_5_bc1015.lima.summary
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.lima.report
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_A02_P5--seqwell_UDI1_A02_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_A03_P5--seqwell_UDI1_A03_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_B01_P5--seqwell_UDI1_B01_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_B02_P5--seqwell_UDI1_B02_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_B03_P5--seqwell_UDI1_B03_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_C01_P5--seqwell_UDI1_C01_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_C02_P5--seqwell_UDI1_C02_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_C03_P5--seqwell_UDI1_C03_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_D01_P5--seqwell_UDI1_D01_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_D02_P5--seqwell_UDI1_D02_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_D03_P5--seqwell_UDI1_D03_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_E01_P5--seqwell_UDI1_E01_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_E02_P5--seqwell_UDI1_E02_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_E03_P5--seqwell_UDI1_E03_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_G01_P5--seqwell_UDI1_G01_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_G02_P5--seqwell_UDI1_G02_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_G03_P5--seqwell_UDI1_G03_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_H01_P5--seqwell_UDI1_H01_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_H02_P5--seqwell_UDI1_H02_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_H03_P5--seqwell_UDI1_H03_P7.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.unbarcoded.bam
+    - path: output/bc1015/lima_out/demux_i7_i5/i7_i5_bc1015.lima.counts
+    - path: output/bc1015/lima_out/demux_i7_i5/i7_i5_bc1015.lima.summary
+    - path: output/bc1015/merged_bam/bc1015.A01.bam
+    - path: output/bc1015/merged_bam/bc1015.A02.bam
+    - path: output/bc1015/merged_bam/bc1015.A03.bam
+    - path: output/bc1015/merged_bam/bc1015.B01.bam
+    - path: output/bc1015/merged_bam/bc1015.B02.bam
+    - path: output/bc1015/merged_bam/bc1015.B03.bam
+    - path: output/bc1015/merged_bam/bc1015.C01.bam
+    - path: output/bc1015/merged_bam/bc1015.C02.bam
+    - path: output/bc1015/merged_bam/bc1015.C03.bam
+    - path: output/bc1015/merged_bam/bc1015.D01.bam
+    - path: output/bc1015/merged_bam/bc1015.D02.bam
+    - path: output/bc1015/merged_bam/bc1015.D03.bam
+    - path: output/bc1015/merged_bam/bc1015.E01.bam
+    - path: output/bc1015/merged_bam/bc1015.E02.bam
+    - path: output/bc1015/merged_bam/bc1015.E03.bam
+    - path: output/bc1015/merged_bam/bc1015.F01.bam
+    - path: output/bc1015/merged_bam/bc1015.F02.bam
+    - path: output/bc1015/merged_bam/bc1015.F03.bam
+    - path: output/bc1015/merged_bam/bc1015.G01.bam
+    - path: output/bc1015/merged_bam/bc1015.G02.bam
+    - path: output/bc1015/merged_bam/bc1015.G03.bam
+    - path: output/bc1015/merged_bam/bc1015.H01.bam
+    - path: output/bc1015/merged_bam/bc1015.H02.bam
+    - path: output/bc1015/merged_bam/bc1015.H03.bam
+    - path: output/bc1015/merged_fastq/bc1015.A01.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.A02.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.A03.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.B01.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.B02.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.B03.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.C01.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.C02.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.C03.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.D01.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.D02.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.D03.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.E01.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.E02.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.E03.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.F01.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.F02.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.F03.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.G01.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.G02.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.G03.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.H01.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.H02.fastq.gz
+    - path: output/bc1015/merged_fastq/bc1015.H03.fastq.gz
+  stdout:
+    contains:
+      - LIMA_BOTH_END
+      - LIST_HYBRIDS
+      - REMOVE_HYBRIDS
+      - LIMA_EITHER_END
+      - MERGE_READS
+      - DEMUX_STATS
+      - FASTQC
+      - MULTIQC
