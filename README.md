@@ -20,6 +20,10 @@ The final output from this pipeline includes Lima output files, demultiplexed BA
 
 ![Fig1. LongPlex Workflow](./docs/LongPlex_Workflow.png)
 
+## Dependencies
+
+This pipeline requires installation of [Nextflow](https://www.nextflow.io/docs/latest/install.html) and a containerization platform such as [Docker](https://docs.docker.com/engine/install/).
+
 ## Docker Containers
 
 All docker containers used in this pipeline are publicly available.
