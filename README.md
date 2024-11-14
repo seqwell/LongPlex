@@ -1,112 +1,140 @@
----
-output:
-  word_document: default
-  html_document: default
----
-
 # seqWell LongPlex Demultiplex Nextflow Pipeline
 
-This is the nextflow pipeline to demultiplex PacBio data for the seqWell LongPlex Long Fragment Multiplexing kit. The pipeline uses Lima for demultiplexing and uses longplexpy tools for data filtering.  The workflow is as shown in the image below. The workflow starts with hifi bam file(s), then a two-step Lima process is conducted. Each Lima process will clip off the corresponding barcode.
+[![CI](https://github.com/seqwell/LongPlex/actions/workflows/nextflow-tests.yml/badge.svg?branch=main)](https://github.com/seqwell/LongPlex/actions/workflows/nextflow-tests.yml?query=branch%3Amain)
+[![Nextflow](https://img.shields.io/badge/Nextflow%20DSL2-%E2%89%A523.11-blue.svg)](https://www.nextflow.io/)
 
- - The first Lima demulitplex uses the neighbor option to get reads with both i7 and i5 seqWell barcodes. Unbarcoded reads are then used in the next clean and Lima process.
- - From the unbarcoded reads from the first Lima process, longplexpy tool is used to remove undesired hybrids.
- - The second Lima demultiplex process uses i7 OR i5 barcode on the cleaned unbarcoded reads. 
+This is the Nextflow pipeline to demultiplex PacBio HiFi data for the seqWell LongPlex Long Fragment Multiplexing Kit.
+The pipeline uses [Lima](https://lima.how/) for demultiplexing and uses [longplexpy](https://github.com/seqwell/longplexpy) tools for data filtering.
+The pipeline is as shown in the image below.
+The pipeline starts with HiFi BAM files and has the following steps:
 
-After the two-step lima process, bam files from these two steps are merged from each sample, and fastq files are also created for each sample from the merged bam files. 
-The output from this pipeline has lima output, demultiplex summary, and a fastqc report for the merged bams for each sample.
+1. The first Lima process, `LIMA_BOTH_END`, demultiplexes reads using lima's neighbor option.
+   This setting will demultiplex reads with both an i7 and i5 seqWell barcode sequence.
+2. The `LIST_HYBRIDS` and `REMOVE_HYBRIDS` processes identify and remove any reads with mismatched i7 and i5 seqWell barcode sequences in the remaining non-demultiplexed reads.
+3. The second Lima process, `LIMA_EITHER_END`, demultiplexes reads with only an i7 or i5 seqWell barcode sequence.
+4. The BAM files for each sample within each pool are merged in the `MERGE_READS` process and FASTQ files are created.
+5. The `DEMUX_STATS` process generates a summary of the demultiplexing steps.
+6. `FASTQC` and `MULTIQC` are used to generate summary metrics for the reads assigned to each sample in the pool.
 
-![Fig1. demultiplex workflow](./assets/demux_workflow.png)
+The final output from this pipeline includes Lima output files, demultiplexed BAM and FASTQ files, a demultiplexing summary, and a multiqc report collating FASTQC results.
 
+![Fig1. LongPlex Workflow](./docs/LongPlex_Workflow.png)
 
+## Dependencies
 
-## Docker containers used in this pipeline:
- - *lima*: quay.io/biocontainers/lima:2.7.1--h9ee0642_0
- - *samtools*: quay.io/biocontainers/samtools:1.19.2--h50ea8bc_1
- - *longplexpy*: seqwell/longplexpy:latest
- - *R*: rocker/verse:4.3.1
- - *fastqc*: quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0
- - *multiqc*: quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
+This pipeline requires installation of [Nextflow](https://www.nextflow.io/docs/latest/install.html) and a containerization platform such as [Docker](https://docs.docker.com/engine/install/).
 
+## Docker Containers
 
+All docker containers used in this pipeline are publicly available.
 
-## How to run the pipeline:
-Download the code files and put the files in your working directory like this tree structure. Use `chmod +x bin/*` to make create_demux_summary.R executable.
+- *lima*: quay.io/biocontainers/lima:2.7.1--h9ee0642_0
+- *samtools*: quay.io/biocontainers/samtools:1.19.2--h50ea8bc_1
+- *longplexpy*: seqwell/longplexpy:latest
+- *R*: rocker/verse:4.3.1
+- *fastqc*: quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0
+- *multiqc*: quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
 
-```
-$ tree
-.
-├── README.md
-├── assets
-│   └── demux_workflow.png
-├── barcode
-│   ├── LongPlex_set1_i5_trimmed_adapters.fa
-│   ├── LongPlex_set1_i7_trimmed_adapters.fa
-│   ├── LongPlex_set2_i5_trimmed_adapters.fa
-│   ├── LongPlex_set2_i7_trimmed_adapters.fa
-│   ├── LongPlex_set3_i5_trimmed_adapters.fa
-│   └── LongPlex_set3_i7_trimmed_adapters.fa
-├── data
-│   └── example.bam
-├── nextflow-pacbio-demux
-│   ├── bin
-│   │   └── create_demux_summary.R
-│   ├── modules
-│   │   ├── demux_stats.nf
-│   │   ├── fastqc.nf
-│   │   ├── lima_i7_i5_both_end.nf
-│   │   ├── lima_i7_i5_either_end.nf
-│   │   ├── listHybrids.nf
-│   │   ├── merge_reads.nf
-│   │   ├── multiqc.nf
-│   │   └── removeHybrids.nf
-│   ├── nextflow.config
-│   ├── nextflow_schema.json
-│   └── pacbio_demux.nf
-├── nextflow.sh
-└── samplesheet
-    └── samplesheet.csv
-```
-The pipeline can be run using the scripts in the nextflow.sh script, run as `bash nextflow.sh`.
-The required inputs are *samplesheet* and *outdir*. If you have downloaded this repo, you can run a quick test by using the *nextflow.sh* code as shown below.
+# How to run the pipeline:
 
-```
-#!/bin/bash
+## Required Parameters
 
-samplesheet=samplesheet/samplesheet.csv
-outdir="output/LongPlex_demux_out"
+The required parameters are *pool_sheet* and *output*.
 
+### `pool_sheet`
+
+`pool_sheet` is the path to a CSV file.
+
+There are four required columns:
+
+- *pool_ID*: Identifier to be used in naming output files.
+  Must contain only letters and numbers in `pool_ID`.
+  Please avoid having underscore (`_`), dash (`-`), and dot(`.`) characters in the `pool_ID`.
+- *pool_path*: Path to PacBio HiFi BAM file for this pool.
+  This path can be a local absolute path or an AWS S3 URI.
+  If it is an AWS S3 URI, please make sure to [set your security credentials appropriately](https://www.nextflow.io/docs/latest/amazons3.html#security-credentials).
+- *i7_barcode* and *i5_barcode*: Path to the appropriate barcodes in FASTA format.
+  Default barcodes are found in `barcodes/`.
+  For early access users, please use barcode set labelled `set3`.
+  Please use barcode set labelled `set1` if you bought kits after product launch.
+
+### `output`
+
+The output directory path can be a local absolute path or an AWS S3 URI.
+If it is an AWS S3 URI, please make sure to [set your security credentials appropriately](https://www.nextflow.io/docs/latest/amazons3.html#security-credentials).
+
+## Profiles:
+
+Several profiles are available and can be selected with the `-profile` option at the command line.
+
+- `apptainer`
+- `aws`
+- `docker`
+- `singularity`
+
+## Example Command
+
+A minimal execution might look like:
+
+```bash
 nextflow run \
--profile aws \
-nextflow-pacbio-demux/pacbio_demux.nf \
--c nextflow-pacbio-demux/nextflow.config \
---samplesheet $samplesheet \
---outdir  $outdir \
--with-report \
--with-trace  \
--bg -resume
-
+    -profile docker \
+    main.nf \
+    --pool_sheet "${PWD}/path/to/pool_sheet.csv" \
+    --output "${PWD}/path/to/output"
 ```
 
+# Running Test Data
 
-## samplesheet requirement: 
-The samplesheet is in csv format. There are four columns for the samplesheet: sample_ID, sample_path, i7_barcode, and i5_barcode.
+The pipeline can be run using included test data with:
 
- - *sample_ID*: You can have only letters and numbers in sampe_ID. Please avoid having underline(_) and dash (-) and dot(.) in the sample_ID.
- - *sample_path*: The sample_path can be local or a link to an s3 bucket. If it is a link to an s3 bucket, please make sure to fill in the correct credentials in the nextflow.config file.
- - *i7_barcode, i5_barcode*: The barcodes are in the barcode folder. For early access users, please use barcode set3. Please use barcode set1 if you bought the kits after the launch.
+```bash
+nextflow run \
+    -profile docker \
+    main.nf \
+    -c nextflow.config \
+    --pool_sheet "${PWD}/tests/pool_sheet.csv" \
+    --output "${PWD}/test_output" \
+    -with-report \
+    -with-trace \
+    -resume
+```
 
-## outdir requirement:
-The outdir can be local (an absolute path or a relative path) or a link to an s3 bucket. If it is a link to an s3 bucket, please make sure to fill in the correct credentials in the nextflow.config file.
+## Expected Outputs
 
-## profile options: 
- - aws
- - singularity
- - apptainer
-   
-Profile option can be changed in the *nextflow.sh* file.
-
-
-## output from example run:
- - you can find the demultiplex summary in the demux_summary folder.
- - check the README file in the output folder for the output structure.
-
+```console
+test_output/
+├── bc1015/
+│   ├── demux_summary/
+│   │   └── bc1015_demux_report.csv                          # Summary of demultiplexing results
+│   ├── hybrids/
+│   │   ├── bc1015.hybrid_list.txt                           # List of reads with mismatched i5 & i7 barcode sequences
+│   │   └── bc1015.unbarcoded.filtered.bam                   # Reads that did not demultiplex in step LIMA_BOTH_ENDS with hybrid reads removed
+│   ├── lima_out/
+│   │   ├── demux_either_i7_i5/                              # Demultiplexing results using a single barcode
+│   │   │   ├── bc1015.[BARCODE_ID]--[BARCODE_ID].bam        # Reads demultiplexed based on a single barcode
+│   │   │   ├── ...
+│   │   │   ├── bc1015.unbarcoded.bam                        # Reads that failed to demultiplex
+│   │   │   ├── i7_5_bc1015.lima.counts                      # Counts of each observed barcode
+│   │   │   └── i7_5_bc1015.lima.summary                     # Summary of lima read filtering results
+│   │   └── demux_i7_i5/                                     # Demultiplexing results using i5 and i7 sequences
+│   │       ├── bc1015.lima.report                           # lima findings for every read
+│   │       ├── bc1015.[P5_BARCODE_ID]--[P7_BARCODE_ID].bam  # Reads demultiplexed based on matching i5 and i7 sequences
+│   │       ├── ...
+│   │       ├── bc1015.unbarcoded.bam                        # Reads that did not demultiplex in the first lima process
+│   │       ├── i7_i5_bc1015.lima.counts                     # Counts of each observed barcode
+│   │       └── i7_i5_bc1015.lima.summary                    # Summary of lima read filtering results
+│   ├── merged_bam/
+│   │   ├── bc1015.[BARCODE_WELL].bam                        # Merged BAM file for specific barcode well
+│   │   └── ...
+│   └── merged_fastq/
+│       ├── bc1015.[BARCODE_WELL].fastq.gz                   # Merged FASTQ file for specific barcode well
+│       └── ...
+├── logs/
+│   ├── execution_report_[DATE-TIME-STAMP].html              # Nextflow execution report
+│   ├── execution_timeline_[DATE-TIME-STAMP].html            # Nextflow execution timeline
+│   ├── execution_trace_[DATE-TIME-STAMP].txt                # Nextflow execution trace
+│   └── pipeline_dag_[DATE-TIME-STAMP].html                  # Nextflow pipeline DAG
+└── multiqc/
+    └── [DATE-TIME-STAMP]_multiqc_report.html                # MultiQC report including FASTQC results
+```

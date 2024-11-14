@@ -1,0 +1,40 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "allOf": [
+        {
+            "$ref": "#/$defs/input_output_options"
+        }
+    ],
+    "title": "seqWell LongPlex Demux",
+    "$defs": {
+        "input_output_options": {
+            "title": "Input & Output Options",
+            "description": "Define the input and output data locations.",
+            "fa_icon": "fas fa-terminal",
+            "properties": {
+                "pool_sheet": {
+                    "description": "Comma-separated pool sheet.",
+                    "fa_icon": "fas fa-file-csv",
+                    "format": "file-path",
+                    "help_text": "CSV file containing pools with headers: pool_ID, pool_path, i7_barcode, i5_barcode",
+                    "mimetype": "text/csv",
+                    "pattern": "^\\S+\\.(csv)$",
+                    "schema": "schemas/input_schema.json",
+                    "type": "string"
+                },
+                "output": {
+                    "description": "Output directory or URI.",
+                    "fa_icon": "fas fa-folder-open",
+                    "format": "directory-path",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pool_sheet",
+                "output"
+            ],
+            "type": "object"
+        }
+    },
+    "type": "object"
+}
