@@ -36,6 +36,10 @@ All docker containers used in this pipeline are publicly available.
 - *fastqc*: quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0
 - *multiqc*: quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
 
+## Conda Environment
+
+The conda environment is defined in `environment-pipeline.yml` and will be built automatically if the pipeline is run with `-profile conda`.
+
 # How to run the pipeline:
 
 ## Required Parameters
