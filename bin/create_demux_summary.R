@@ -39,7 +39,7 @@ df4_s <- df4 %>%
 
 # Merge well counts
 df_counts <- df2_s %>%
-  dplyr::left_join(df4_s, by = "well") %>%
+  dplyr::full_join(df4_s, by = "well") %>%
   dplyr::mutate(P5 = ifelse(is.na(P5), 0, P5)) %>%
   dplyr::mutate(P7 = ifelse(is.na(P7), 0, P7)) %>%
   dplyr::mutate(P5_P7 = ifelse(is.na(P5_P7), 0, P5_P7)) %>%
