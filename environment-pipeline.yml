@@ -1,0 +1,16 @@
+name: longplex-nf
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bioconda::fastqc=0.12.1
+  #- bioconda::lima=2.7.1
+  - bioconda::multiqc=1.21
+  - bioconda::nextflow=23.10.1
+  - bioconda::picard=3.2.0
+  - bioconda::samtools=1.19.2
+  - conda-forge::python=3.11.0
+  - conda-forge::pip=22.3.1
+  - conda-forge::r-base=4.3.1
+  - pip:
+    - git+https://github.com/seqwell/longplexpy@0.1.0
