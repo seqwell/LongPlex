@@ -69,6 +69,7 @@ Several profiles are available and can be selected with the `-profile` option at
 
 - `apptainer`
 - `aws`
+- `conda`
 - `docker`
 - `singularity`
 
@@ -86,11 +87,27 @@ nextflow run \
 
 # Running Test Data
 
+## With Docker
+
 The pipeline can be run using included test data with:
 
 ```bash
 nextflow run \
     -profile docker \
+    main.nf \
+    -c nextflow.config \
+    --pool_sheet "${PWD}/tests/pool_sheet.csv" \
+    --output "${PWD}/test_output" \
+    -with-report \
+    -with-trace \
+    -resume
+```
+
+## With Conda
+
+```bash
+nextflow run \
+    -profile conda \
     main.nf \
     -c nextflow.config \
     --pool_sheet "${PWD}/tests/pool_sheet.csv" \
