@@ -11,9 +11,10 @@ dependencies:
   - bioconda::samtools=1.19.2
   - conda-forge::python=3.11.0
   - conda-forge::pip=22.3.1
-  - conda-forge::r-base=4.3.1
+  - conda-forge::r-base=4.3.3
   - conda-forge::r-dplyr=1.1.4
   - conda-forge::r-purrr=1.0.2
+  - conda-forge::readr=2.1.5
 
   - pip:
     - git+https://github.com/seqwell/longplexpy@0.1.0
