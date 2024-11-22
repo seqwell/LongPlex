@@ -22,7 +22,8 @@ The final output from this pipeline includes Lima output files, demultiplexed BA
 
 ## Dependencies
 
-This pipeline requires installation of [Nextflow](https://www.nextflow.io/docs/latest/install.html) and a containerization platform such as [Docker](https://docs.docker.com/engine/install/).
+This pipeline requires installation of [Nextflow](https://www.nextflow.io/docs/latest/install.html).
+It also requires installation of either a containerization platform such as [Docker](https://docs.docker.com/engine/install/) or a package manager such as [conda/mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html).
 
 ## Docker Containers
 
@@ -34,6 +35,10 @@ All docker containers used in this pipeline are publicly available.
 - *R*: rocker/verse:4.3.1
 - *fastqc*: quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0
 - *multiqc*: quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
+
+## Conda Environment
+
+The conda environment is defined in `environment-pipeline.yml` and will be built automatically if the pipeline is run with `-profile conda`.
 
 # How to run the pipeline:
 
@@ -69,6 +74,7 @@ Several profiles are available and can be selected with the `-profile` option at
 
 - `apptainer`
 - `aws`
+- `conda`
 - `docker`
 - `singularity`
 
@@ -86,11 +92,27 @@ nextflow run \
 
 # Running Test Data
 
+## With Docker
+
 The pipeline can be run using included test data with:
 
 ```bash
 nextflow run \
     -profile docker \
+    main.nf \
+    -c nextflow.config \
+    --pool_sheet "${PWD}/tests/pool_sheet.csv" \
+    --output "${PWD}/test_output" \
+    -with-report \
+    -with-trace \
+    -resume
+```
+
+## With Conda
+
+```bash
+nextflow run \
+    -profile conda \
     main.nf \
     -c nextflow.config \
     --pool_sheet "${PWD}/tests/pool_sheet.csv" \
