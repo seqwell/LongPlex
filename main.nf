@@ -55,7 +55,21 @@ workflow {
 
     FASTQC(MERGE_READS.out.fastq)
 
-    MULTIQC(FASTQC.out.archive.collect().ifEmpty([]))
+    both_end_stats = LIMA_BOTH_END.out.counts
+        .mix(LIMA_BOTH_END.out.summary)
+        .map { _meta, stats -> stats }
+        .collect()
+
+    either_end_stats = LIMA_EITHER_END.out.counts
+        .mix(LIMA_EITHER_END.out.summary)
+        .map { _meta, stats -> stats }
+        .collect()
+
+    MULTIQC(
+        FASTQC.out.archive.collect().ifEmpty([]),
+        both_end_stats,
+        either_end_stats
+    )
 
     // Pipeline Cleanup ////////////////////////////////////////////////////////////////////////////
 
