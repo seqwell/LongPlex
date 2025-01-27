@@ -26,12 +26,10 @@ Before creating a new release, confirm `wf/entrypoint` has been updated to pass 
 In your local copy of the repository checkout the commit you wish to use for the next release.
 
 Typically, this will be the latest commit on main.
-Checkout a new branch for making and pushing the required changes.
 
 ```console
 git checkout main
 git pull
-git checkout -b zn_latch_release
 ```
 
 Update the version stored in the `version` file.
