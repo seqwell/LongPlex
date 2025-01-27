@@ -1,3 +1,4 @@
+# Prologue
 # DO NOT CHANGE
 from 812206152185.dkr.ecr.us-west-2.amazonaws.com/latch-base-nextflow:v2.3.3
 
@@ -21,14 +22,13 @@ arg DEBIAN_FRONTEND=noninteractive
 
 # Latch SDK
 # DO NOT REMOVE
-run pip install latch==2.53.10
+run pip install latch==2.55.2
 run mkdir /opt/latch
 
-
 # Copy workflow data (use .dockerignore to skip files)
-
 copy . /root/
 
+# Epilogue
 
 # Latch workflow registration metadata
 # DO NOT CHANGE
