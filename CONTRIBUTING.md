@@ -44,8 +44,23 @@ git commit -m "chore: update to version #.#.#"
 
 ### Register the Workflow
 
+Login to latch.
+
 ```console
 latch login
+```
+
+If this process generates a warning that the installed version of latch should be upgraded, then you should update the version of latch specified in [environment-dev.yml](environment-dev.yml) and the latch [config](.latch/config).
+If you update those files be sure to commit the changes.
+
+```console
+git add environment-dev.yml .latch/config
+git commit -m "chore: bump latch version"
+```
+
+Register the workflow.
+
+```console
 latch register .
 ```
 

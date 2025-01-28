@@ -9,4 +9,4 @@ dependencies:
   - conda-forge::pip=22.3.1
   - pip:
     - pytest-workflow==2.0.1
-    - latch==2.53.0
+    - latch==2.55.2
