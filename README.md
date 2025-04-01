@@ -29,7 +29,7 @@ It also requires installation of either a containerization platform such as [Doc
 
 All docker containers used in this pipeline are publicly available.
 
-- *lima*: quay.io/biocontainers/lima:2.7.1--h9ee0642_0
+- *lima*: quay.io/biocontainers/lima:2.13.0--h9ee0642_0
 - *samtools*: quay.io/biocontainers/samtools:1.19.2--h50ea8bc_1
 - *longplexpy*: seqwell/longplexpy:latest
 - *R*: rocker/verse:4.3.1
