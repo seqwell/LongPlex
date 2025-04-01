@@ -22,19 +22,23 @@ df4 <- readr::read_table(i7_5_counts)
 # Get well specific i7&i5 counts
 df2
 df2_s <- df2 %>%
+  dplyr::filter(IdxFirst != -1) %>%
   dplyr::mutate(well = stringr::str_extract_all(IdxFirstNamed, "seqwell_UDI[1-4]_[A-H][0-9]{2}")) %>%
   dplyr::mutate(well = as.character(well)) %>%
   dplyr::select(well, Counts) %>%
+  dplyr::mutate( Counts = as.numeric( Counts ) ) %>%
   dplyr::rename(P5_P7 = Counts)
 
 # Get well specific i7|i5 counts
 df4
 df4_s <- df4 %>%
+  dplyr::filter(IdxFirst != -1) %>%
   dplyr::mutate(well = stringr::str_extract_all(IdxFirstNamed, "seqwell_UDI[1-4]_[A-H][0-9]{2}")) %>%
   dplyr::mutate(well = as.character(well)) %>%
   dplyr::mutate(end = stringr::str_extract_all(IdxFirstNamed, "P(5|7)$")) %>%
   dplyr::mutate(end = as.character(end)) %>%
   dplyr::select(well, end, Counts) %>%
+  dplyr::mutate( Counts = as.numeric( Counts ) ) %>%
   tidyr::spread(end, Counts)
 
 # Merge well counts
