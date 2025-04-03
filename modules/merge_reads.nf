@@ -12,7 +12,7 @@ process MERGE_READS {
     // TODO: do a more simple merge...
     // TODO: why not output an unmapped BAM?
     """
-    samtools merge ${meta.pool_ID}.${meta.well_ID}.bam ${bams}
-    samtools fastq ${meta.pool_ID}.${meta.well_ID}.bam | bgzip -c > ${meta.pool_ID}.${meta.well_ID}.fastq.gz
+    samtools merge -@ ${task.cpus} ${meta.pool_ID}.${meta.well_ID}.bam ${bams}
+    samtools fastq -@ ${task.cpus} ${meta.pool_ID}.${meta.well_ID}.bam | bgzip -c > ${meta.pool_ID}.${meta.well_ID}.fastq.gz
     """
 }
