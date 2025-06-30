@@ -65,16 +65,14 @@ workflow {
         .map { _meta, stats -> stats }
         .collect()
 
-    // temp remove lima from the multiqc
-    // MULTIQC(
-    //    FASTQC.out.archive.collect().ifEmpty([]),
-    //    both_end_stats,
-    //    either_end_stats
-    // )
+    
+     MULTIQC(
+        FASTQC.out.archive.collect().ifEmpty([]),
+        both_end_stats,
+        either_end_stats
+     )
 
-      MULTIQC(
-        FASTQC.out.archive.collect().ifEmpty([])
-      )
+
 
     // Pipeline Cleanup ////////////////////////////////////////////////////////////////////////////
 
