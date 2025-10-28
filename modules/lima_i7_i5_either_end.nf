@@ -19,7 +19,6 @@ process LIMA_EITHER_END {
     lima \\
         --single-side \\
         -j 128 \\
-        --peek-guess \\
         --ccs \\
         --min-score 26 \\
         --store-unbarcoded \\
