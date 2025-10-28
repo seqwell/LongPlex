@@ -20,7 +20,6 @@ process LIMA_BOTH_END {
     lima \\
         --neighbors \\
         -j 128 \\
-        --peek-guess \\
         --ccs \\
         --min-score 26 \\
         --store-unbarcoded \\
