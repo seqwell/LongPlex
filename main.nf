@@ -36,7 +36,9 @@ workflow {
     def bams_by_well_ch = LIMA_BOTH_END.out.bam
         .join(LIMA_EITHER_END.out.bam)
         .map { meta, both_bams, either_bams ->
-            tuple(meta, both_bams + either_bams)
+        def both_list = both_bams instanceof List ? both_bams : [both_bams]
+        def either_list = either_bams instanceof List ? either_bams : [either_bams]
+        tuple(meta, both_list + either_list)
         }
         .flatMap { meta, bams ->
             bams.collect { bam -> 
