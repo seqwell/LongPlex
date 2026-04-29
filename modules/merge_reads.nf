@@ -9,10 +9,9 @@ process MERGE_READS {
     tuple val(meta), path("*.bam"), emit: bam
 
     script:
-    // TODO: do a more simple merge...
-    // TODO: why not output an unmapped BAM?
+    def id = meta.sample_ID
     """
-    samtools merge -@ ${task.cpus} ${meta.pool_ID}.${meta.well_ID}.bam ${bams}
-    samtools fastq -@ ${task.cpus} ${meta.pool_ID}.${meta.well_ID}.bam | bgzip -c > ${meta.pool_ID}.${meta.well_ID}.fastq.gz
+    samtools merge -@ ${task.cpus} ${id}.bam ${bams}
+    samtools fastq -@ ${task.cpus} ${id}.bam | bgzip -c > ${id}.fastq.gz
     """
 }

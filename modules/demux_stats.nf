@@ -5,7 +5,7 @@ process DEMUX_STATS {
     tuple val(meta), path(stat)
 
     output:
-    path('*.csv'), emit: metrics
+    tuple val(meta), path('*.csv'), emit: metrics
 
     script:
     """

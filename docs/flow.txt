@@ -1,0 +1,39 @@
+digraph workflow {
+    rankdir=LR;
+    splines=true;
+    nodesep=0.3;
+    ranksep=0.7;
+
+    node [
+        shape=box,
+        style="rounded,filled",
+        fillcolor="#cfe2f3",
+        color="#6c8ebf",
+        fontname="Helvetica"
+    ];
+
+    edge [
+        color="#555555",
+        arrowsize=0.8
+    ];
+
+    // Core flow
+    LIMA_BOTH_END -> LIST_HYBRIDS;
+    LIMA_BOTH_END -> REMOVE_HYBRIDS;
+    LIST_HYBRIDS -> REMOVE_HYBRIDS;
+    REMOVE_HYBRIDS -> LIMA_EITHER_END;
+    LIMA_EITHER_END -> DEMUX_STATS;
+
+    // Direct paths to merge
+    LIMA_BOTH_END -> MERGE_READS;
+    LIMA_EITHER_END -> MERGE_READS;
+
+    // QC + aggregation
+    MERGE_READS -> NANOSTAT;
+    NANOSTAT -> MULTIQC;
+
+    // Compact column grouping
+    { rank=same; LIST_HYBRIDS; REMOVE_HYBRIDS }
+    { rank=same; DEMUX_STATS; LIMA_EITHER_END }
+    { rank=same; NANOSTAT; MERGE_READS }
+}

@@ -20,7 +20,7 @@ process LIMA_EITHER_END {
         --single-side \\
         -j 128 \\
         --ccs \\
-        --min-score 26 \\
+        --min-score 80 \\
         --store-unbarcoded \\
         --split-named \\
         --log-level INFO \\

@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::fastqc=0.12.1
+  - bioconda::nanostat=1.6.0
   - bioconda::lima=2.13.0
   - bioconda::multiqc=1.21
   - bioconda::picard=3.2.0

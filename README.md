@@ -14,9 +14,10 @@ The pipeline starts with HiFi BAM files and has the following steps:
 3. The second Lima process, `LIMA_EITHER_END`, demultiplexes reads with only an i7 or i5 seqWell barcode sequence.
 4. The BAM files for each sample within each pool are merged in the `MERGE_READS` process and FASTQ files are created.
 5. The `DEMUX_STATS` process generates a summary of the demultiplexing steps.
-6. `FASTQC` and `MULTIQC` are used to generate summary metrics for the reads assigned to each sample in the pool.
+6. If a `rename_map` is provided, the `RENAME_DEMUX_STATS` process renames the sample identifiers in the demultiplexing summary to match the user-defined sample names.
+7. `NANOSTAT` and `MULTIQC` are used to generate summary metrics for the reads assigned to each sample in the pool.
 
-The final output from this pipeline includes Lima output files, demultiplexed BAM and FASTQ files, a demultiplexing summary, and a multiqc report collating FASTQC results.
+The final output from this pipeline includes Lima output files, demultiplexed BAM and FASTQ files, a demultiplexing summary, and a MultiQC report collating NanoStat results.
 
 ![Fig1. LongPlex Workflow](./docs/LongPlex_Workflow.png)
 
@@ -33,8 +34,9 @@ All docker containers used in this pipeline are publicly available.
 - *samtools*: quay.io/biocontainers/samtools:1.19.2--h50ea8bc_1
 - *longplexpy*: seqwell/longplexpy:latest
 - *R*: rocker/verse:4.3.1
-- *fastqc*: quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0
+- *nanostat*: quay.io/biocontainers/nanostat:1.6.0--pyhdfd78af_0
 - *multiqc*: quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
+- *python*: python:3.12-slim-bookworm
 
 ## Conda Environment
 
@@ -68,6 +70,33 @@ There are four required columns:
 The output directory path can be a local absolute path or an AWS S3 URI.
 If it is an AWS S3 URI, please make sure to [set your security credentials appropriately](https://www.nextflow.io/docs/latest/amazons3.html#security-credentials).
 
+
+## Optional Parameters
+
+### `rename_map`
+
+`rename_map` is the path to a CSV file used to rename output BAM and FASTQ files, as well as the sample identifiers in the demultiplexing summary.
+If not provided, output files and demultiplexing summary will use `pool_ID.well_ID` as the default sample identifier.
+
+There are two required columns:
+
+- *pool_ID.well_ID*: The default sample identifier in the format `pool_ID.well_ID` (e.g. `bc1015.A01`).
+- *sample_ID*: The desired output sample name (e.g. `bc1015.sample1`).
+
+Example (`tests/sample_map.csv`):
+
+| pool_ID.well_ID | sample_ID       |
+|---------------|-----------------|
+| bc1015.A01    | bc1015.sample1  |
+| bc1015.A02    | bc1015.sample2  |
+| bc1015.A03    | bc1015.sample3  |
+| bc1015.B01    | bc1015.sample4  |
+| bc1015.B02    | bc1015.sample5  |
+| bc1015.B03    | bc1015.sample6  |
+| bc1015.C01    | bc1015.sample7  |
+
+When `rename_map` is provided, the `RENAME_DEMUX_STATS` process will also produce a renamed version of the demultiplexing summary CSV with the user-defined sample names applied.
+
 ## Profiles:
 
 Several profiles are available and can be selected with the `-profile` option at the command line.
@@ -94,7 +123,7 @@ nextflow run \
 
 ## With Docker
 
-The pipeline can be run using included test data with:
+The pipeline can be run using included test data without BAM and FASTQ file renaming:
 
 ```bash
 nextflow run \
@@ -103,6 +132,21 @@ nextflow run \
     -c nextflow.config \
     --pool_sheet "${PWD}/tests/pool_sheet.csv" \
     --output "${PWD}/test_output" \
+    -with-report \
+    -with-trace \
+    -resume
+```
+
+The pipeline can be run using included test data with BAM and FASTQ file renaming:
+
+```bash
+nextflow run \
+    -profile docker \
+    main.nf \
+    -c nextflow.config \
+    --pool_sheet "${PWD}/tests/pool_sheet.csv" \
+    --output "${PWD}/test_output_renamed" \
+    --rename_map "${PWD}/tests/sample_map.csv" \
     -with-report \
     -with-trace \
     -resume
@@ -128,7 +172,8 @@ nextflow run \
 test_output/
 ├── bc1015/
 │   ├── demux_summary/
-│   │   └── bc1015_demux_report.csv                          # Summary of demultiplexing results
+│   │   ├── bc1015_demux_report.csv                          # Summary of demultiplexing results
+│   │   └── bc1015_demux_report_renamed.csv                  # Renamed summary (only present if --rename_map is provided)
 │   ├── hybrids/
 │   │   ├── bc1015.hybrid_list.txt                           # List of reads with mismatched i5 & i7 barcode sequences
 │   │   └── bc1015.unbarcoded.filtered.bam                   # Reads that did not demultiplex in step LIMA_BOTH_ENDS with hybrid reads removed
@@ -147,10 +192,10 @@ test_output/
 │   │       ├── i7_i5_bc1015.lima.counts                     # Counts of each observed barcode
 │   │       └── i7_i5_bc1015.lima.summary                    # Summary of lima read filtering results
 │   ├── merged_bam/
-│   │   ├── bc1015.[BARCODE_WELL].bam                        # Merged BAM file for specific barcode well
+│   │   ├── bc1015.[BARCODE_WELL/sample_ID].bam              # Merged BAM file for specific barcode well; sample_ID is used if rename_map is provided, otherwise barcode_well is used (e.g. bc1015.A01)
 │   │   └── ...
 │   └── merged_fastq/
-│       ├── bc1015.[BARCODE_WELL].fastq.gz                   # Merged FASTQ file for specific barcode well
+│       ├── bc1015.[BARCODE_WELL/sample_ID].fastq.gz         # Merged FASTQ file for specific barcode well; sample_ID is used if rename_map is provided, otherwise barcode_well is used (e.g. bc1015.A01)
 │       └── ...
 ├── logs/
 │   ├── execution_report_[DATE-TIME-STAMP].html              # Nextflow execution report
@@ -158,5 +203,5 @@ test_output/
 │   ├── execution_trace_[DATE-TIME-STAMP].txt                # Nextflow execution trace
 │   └── pipeline_dag_[DATE-TIME-STAMP].html                  # Nextflow pipeline DAG
 └── multiqc/
-    └── [DATE-TIME-STAMP]_multiqc_report.html                # MultiQC report including FASTQC results
+    └── [DATE-TIME-STAMP]_multiqc_report.html                # MultiQC report including NanoStat results
 ```

@@ -1,25 +1,23 @@
 process MULTIQC {
+    
+    tag "${pool_id}"
 
     input:
-    path('fastqc/*')
-    path('demux_i7_i5/*')
-    path('demux_either_i7_i5/*')
+    tuple val(pool_id), path(nanostat_reports)
 
     output:
-    path('*multiqc_report.html')
+    path("${pool_id}_ONT_multiqc_report.html")
 
     script:
-    def datetime = new Date().format("yyyy-MM-dd_HH-mm-ss", TimeZone.getTimeZone("UTC"))
-    def filename = datetime + "_multiqc_report.html"
     """
-    multiqc . \\
-        --filename ${filename} \\
-        --force \\
-        --interactive \\
-        --no-data-dir \\
-        --verbose \\
-        --ignore demux_i7_i5/ \\
-        --ignore demux_either_i7_i5
-        
+    # Create sample rename file: old_name -> new_name
+    for f in \$(ls ${nanostat_reports} | sort -V); do
+        newname=\$(basename \$f | sed 's/_nanostat.txt//')
+        cp \$f \${newname}.txt
+    done
+
+     multiqc *_nanostat.txt \\
+        --fullnames \\
+        --filename ${pool_id}_ONT_multiqc_report.html
     """
 }
