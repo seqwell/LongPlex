@@ -137,5 +137,4 @@
       - LIMA_EITHER_END
       - MERGE_READS
       - DEMUX_STATS
-      - FASTQC
       - MULTIQC
