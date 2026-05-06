@@ -18,6 +18,6 @@ process MULTIQC {
 
      multiqc *_nanostat.txt \\
         --fullnames \\
-        --filename ${pool_id}_ONT_multiqc_report.html
+        --filename ${pool_id}_multiqc_report.html
     """
 }
