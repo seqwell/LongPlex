@@ -6,7 +6,7 @@ process MULTIQC {
     tuple val(pool_id), path(nanostat_reports)
 
     output:
-    path("${pool_id}_ONT_multiqc_report.html")
+    path("${pool_id}_multiqc_report.html")
 
     script:
     """
