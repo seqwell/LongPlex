@@ -32,5 +32,6 @@ process LIMA_BOTH_END {
 
     mv demux_i7_i5/${meta.pool_ID}.lima.counts demux_i7_i5/i7_i5_${meta.pool_ID}.lima.counts
     mv demux_i7_i5/${meta.pool_ID}.lima.summary demux_i7_i5/i7_i5_${meta.pool_ID}.lima.summary
+    mv demux_i7_i5/${meta.pool_ID}.lima.report demux_i7_i5/i7_i5_${meta.pool_ID}.lima.report
     """
 }
