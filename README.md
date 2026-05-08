@@ -208,19 +208,16 @@ test_output/
 │   │   ├── bc1015.[BARCODE_WELL/sample_ID].fastq.gz         # Merged FASTQ file for specific barcode well; sample_ID is used if rename_map is provided, otherwise barcode_well is used (e.g. bc1015.A01)
 │   │   └── ...
 │   └── demux_qc/
-│       ├── bc1015_per_barcode_qc_report.csv                           # Per-barcode QC report for pool bc1015
-│       └── bc1015_per_pool_qc_report.csv                          # Per-pool QC report for pool bc1015
-├── bc1016/                                                  # One directory per pool (if multiple pools in pool_sheet)
-│   └── demux_qc/
-│       ├── bc1016_per_barcode_qc_report.csv                           # Per-barcode QC report for pool bc1016
-│       └── bc1016_per_pool_qc_report.csv                          # Per-pool QC report for pool bc1016
-├── logs/
-│   ├── execution_report_[DATE-TIME-STAMP].html              # Nextflow execution report
-│   ├── execution_timeline_[DATE-TIME-STAMP].html            # Nextflow execution timeline
-│   ├── execution_trace_[DATE-TIME-STAMP].txt                # Nextflow execution trace
-│   └── pipeline_dag_[DATE-TIME-STAMP].html                  # Nextflow pipeline DAG
-└── multiqc/
-    └── [DATE-TIME-STAMP]_multiqc_report.html                # MultiQC report including NanoStat results
+│   │   ├── bc1015_per_barcode_qc_report.csv                           # Per-barcode QC report for pool bc1015
+│   │   └── bc1015_per_pool_qc_report.csv                          # Per-pool QC report for pool bc1015
+|   └── multiqc/
+|       └── bc1015_multiqc_report.html                       # MultiQC report including NanoStat results
+└── logs/
+    ├── execution_report_[DATE-TIME-STAMP].html              # Nextflow execution report
+    ├── execution_timeline_[DATE-TIME-STAMP].html            # Nextflow execution timeline
+    ├── execution_trace_[DATE-TIME-STAMP].txt                # Nextflow execution trace
+    └── pipeline_dag_[DATE-TIME-STAMP].html                  # Nextflow pipeline DAG
+
 ```
 
 ### Per-well stats table (`{pool_ID}/demux_qc/{pool_ID}_per_barcode_qc_report.csv`)
