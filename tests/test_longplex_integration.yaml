@@ -56,7 +56,6 @@
     - path: output/bc1015/lima_out/demux_either_i7_i5/bc1015.unbarcoded.bam
     - path: output/bc1015/lima_out/demux_either_i7_i5/i7_5_bc1015.lima.counts
     - path: output/bc1015/lima_out/demux_either_i7_i5/i7_5_bc1015.lima.summary
-    - path: output/bc1015/lima_out/demux_i7_i5/bc1015.lima.report
     - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_A01_P5--seqwell_UDI1_A01_P7.bam
     - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_A02_P5--seqwell_UDI1_A02_P7.bam
     - path: output/bc1015/lima_out/demux_i7_i5/bc1015.seqwell_UDI1_A03_P5--seqwell_UDI1_A03_P7.bam
