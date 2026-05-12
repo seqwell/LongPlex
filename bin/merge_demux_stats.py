@@ -12,6 +12,7 @@ def parse_args():
     parser.add_argument("--report-either",         required=True,  help="lima_either.lima.report")
     parser.add_argument("--counts-both",           required=True,  help="lima_both.lima.counts")
     parser.add_argument("--counts-either",         required=True,  help="lima_either.lima.counts")
+    parser.add_argument("--summary-both",          required=True,  help="lima_both.lima.summary")
     parser.add_argument("--nanostat",              required=True,  nargs="+", help="Per-sample NanoStat .txt files")
     parser.add_argument("--unbarcoded-nanostat",   required=True,  help="NanoStat .txt for unbarcoded BAM")
     parser.add_argument("--sample-map",            required=False, default=None,
@@ -40,6 +41,22 @@ def infer_pool_id(counts_both_path):
     stem    = stem.replace(".lima", "")     # i7_i5_bc1015
     pool_id = stem.split("_")[-1]          # bc1015
     return pool_id
+
+
+def parse_lima_summary_input_reads(path):
+    """
+    Parse total input HiFi reads from lima_both.lima.summary.
+    Looks for a line containing 'input' and extracts the first integer.
+    e.g. "Reads input     : 11014"  ->  11014
+    """
+    with open(path) as f:
+        for line in f:
+            if "input" in line.lower():
+                m = re.search(r'(\d+)', line)
+                if m:
+                    return int(m.group(1))
+    print(f"[WARN] Could not parse input reads from {path}", file=sys.stderr)
+    return None
 
 
 def load_report(path, step_label):
@@ -222,14 +239,25 @@ def parse_unbarcoded_nanostat(path):
     }
 
 
-def write_pool_summary(final_df, not_barcoded_reads, unbarcoded_nano, output_path):
+def write_pool_summary(final_df, total_input_reads, total_demuxed_reads,
+                       unbarcoded_nano, output_path):
     """
     Generate per-pool run-level summary table.
-    Writes plain CSV without quoting of values containing commas.
+
+    total_input_reads  : true HiFi reads before any lima demux (from lima.summary)
+    total_demuxed_reads: all reads lima assigned to any barcode (from counts files)
+    not_barcoded_reads : derived as total_input - total_demuxed
+
+    NanoStat runs on every well regardless of sample map so no unused-barcode
+    concept applies — two buckets only: barcoded and unbarcoded.
+
+    Invariant:
+        total_demuxed_reads + not_barcoded_reads == total_input_reads
     """
-    barcoded_reads   = final_df["HiFi_Reads_count"].sum()
-    unbarcoded_reads = not_barcoded_reads
-    total_reads      = barcoded_reads + unbarcoded_reads
+    # Barcoded = everything lima successfully demuxed (ground truth from counts)
+    barcoded_reads     = total_demuxed_reads
+    not_barcoded_reads = total_input_reads - total_demuxed_reads
+    total_reads        = total_input_reads
 
     barcoded_yield   = final_df["HiFi_Yield(bp)"].sum()
     unbarcoded_yield = unbarcoded_nano.get("TotalBases") or 0
@@ -247,7 +275,7 @@ def write_pool_summary(final_df, not_barcoded_reads, unbarcoded_nano, output_pat
     unbarcoded_mean_len = unbarcoded_nano.get("MeanReadLength")
 
     def fmt_gb(val):
-        return f"{val / 1e9:.2f} Gb" if val else "N/A"
+        return f"{val / 1e9:.5f} Gb" if val else "N/A"
 
     def fmt_kb(val):
         return f"{val / 1000:.2f} kb" if val else "N/A"
@@ -256,17 +284,23 @@ def write_pool_summary(final_df, not_barcoded_reads, unbarcoded_nano, output_pat
         return f"{100 * num / den:.2f}%" if den > 0 else "N/A"
 
     rows = [
+        ("HiFi Reads (before demux)",
+         str(total_input_reads)),
+
         ("Unique Barcodes",
          str(int(final_df["Barcode"].nunique()))),
 
         ("Barcoded HiFi Reads",
-         str(int(barcoded_reads))),
+         str(barcoded_reads)),
 
         ("Unbarcoded HiFi Reads",
-         str(int(unbarcoded_reads))),
+         str(int(not_barcoded_reads))),
 
         ("Barcoded HiFi Reads (%)",
          fmt_pct(barcoded_reads, total_reads)),
+
+        ("Unbarcoded HiFi Reads (%)",
+         fmt_pct(not_barcoded_reads, total_reads)),
 
         ("Barcoded HiFi Yield (Gb)",
          fmt_gb(barcoded_yield)),
@@ -312,6 +346,13 @@ def main():
     pool_id = infer_pool_id(args.counts_both)
     print(f"[info] Inferred pool_ID: {pool_id}", file=sys.stderr)
 
+    # ── 0. True input read count from lima_both.lima.summary ─────────────────
+    total_input_reads = parse_lima_summary_input_reads(args.summary_both)
+    if total_input_reads is None:
+        print("[ERROR] Could not determine total input reads — aborting", file=sys.stderr)
+        sys.exit(1)
+    print(f"[info] Total input HiFi reads (before demux): {total_input_reads}", file=sys.stderr)
+
     # ── 1. Barcode Quality — per-read ScoreCombined, grouped by well_ID ──────
     rep_both   = load_report(args.report_both,   "both")
     rep_either = load_report(args.report_either, "either")
@@ -332,9 +373,7 @@ def main():
     cnt_both_df,   nb_both   = load_counts(args.counts_both,   group_by_well=False)
     cnt_either_df, nb_either = load_counts(args.counts_either, group_by_well=True)
 
-    not_barcoded_reads = nb_both + nb_either
-    print(f"[debug] Not Barcoded reads: both={nb_both} either={nb_either} "
-          f"total={not_barcoded_reads}", file=sys.stderr)
+    print(f"[debug] nb_both={nb_both} nb_either={nb_either}", file=sys.stderr)
 
     counts_by_well = pd.merge(
         cnt_both_df.rename(columns={"Counts": "Counts_both"}),
@@ -345,6 +384,15 @@ def main():
         counts_by_well["Counts_both"] + counts_by_well["Counts_either"]
     )
     counts_by_well = counts_by_well[["well_ID", "HiFi_Reads_count"]]
+
+    # Ground-truth demux count — all reads lima assigned to any barcode.
+    # Captured here from counts files, consistent with the R script.
+    # not_barcoded = input - demuxed, matches reads_before_demux logic exactly.
+    total_demuxed_reads = int(counts_by_well["HiFi_Reads_count"].sum())
+    not_barcoded_reads  = total_input_reads - total_demuxed_reads
+
+    print(f"[debug] Total demuxed (all barcodes): {total_demuxed_reads}", file=sys.stderr)
+    print(f"[debug] True unbarcoded (input - demuxed): {not_barcoded_reads}", file=sys.stderr)
     print(f"[debug] Wells with read counts: {len(counts_by_well)}", file=sys.stderr)
 
     # ── 3. Sample map (before NanoStat — needed for well_ID lookup) ───────────
@@ -401,17 +449,18 @@ def main():
         final["Sample_Name"] = final["Sample_Name"].fillna(
             final["pool_well_key_map"].fillna(final["well_ID"])
         )
-        # Barcode = original pool_well_key from sample map (e.g. bc1015.A01)
         final["Barcode"] = final["pool_well_key_map"].fillna(final["well_ID"])
     else:
         final["Sample_Name"] = final["pool_well_key"].fillna(final["well_ID"])
         final["Barcode"]     = final["pool_well_key"].fillna(final["well_ID"])
 
     # ── 7. Filter: keep only rows with HiFi Yield reported ───────────────────
+    # Drops wells where NanoStat produced no output (true zero-read bleed-through).
+    # Does not affect per-pool read counts — those come from total_demuxed_reads.
     before = len(final)
     final  = final[final["TotalBases"].notna()].copy()
     after  = len(final)
-    print(f"[info] Removed {before - after} rows with no HiFi Yield (bleed-through barcodes)",
+    print(f"[info] Removed {before - after} rows with no HiFi Yield (zero-read wells)",
           file=sys.stderr)
 
     # ── 8. Select, rename, sort, write per-barcode CSV ────────────────────────
@@ -432,7 +481,8 @@ def main():
     # ── 9. Write per-pool summary ─────────────────────────────────────────────
     write_pool_summary(
         final_df=final,
-        not_barcoded_reads=not_barcoded_reads,
+        total_input_reads=total_input_reads,
+        total_demuxed_reads=total_demuxed_reads,
         unbarcoded_nano=unbarcoded_nano,
         output_path=args.summary_output
     )

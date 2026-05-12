@@ -123,25 +123,23 @@ MULTIQC(ch_multiqc_input)
         .map { meta, report -> tuple(meta.pool_ID, report) }
         // tuple("bc1015", bc1015_unbarcoded_nanostat.txt)
         // tuple("bc1016", bc1016_unbarcoded_nanostat.txt)
+    def lima_summary_ch = LIMA_BOTH_END.out.summary
 
     // Join all channels on pool_ID — each pool stays separate
     def merge_demux_input_ch = lima_reports_ch
-        .join(lima_counts_ch)
-        // tuple(meta, report_both, report_either, counts_both, counts_either)
-        .map { meta, report_both, report_either, counts_both, counts_either ->
-            // Use pool_ID as join key — promotes it to first position
-            tuple(meta.pool_ID, meta, report_both, report_either, counts_both, counts_either)
-        }
-        .join(nanostat_by_pool_ch)
-        // tuple(pool_ID, meta, report_both, report_either, counts_both, counts_either, [nanostats])
-        .join(nanostat_unbarcoded_ch)
-        // tuple(pool_ID, meta, report_both, report_either, counts_both, counts_either, [nanostats], unbarcoded)
-        .map { pool_id, meta, report_both, report_either, counts_both, counts_either,
-               nanostat_files, unbarcoded_report ->
-            def sample_map = params.rename_map ? file(params.rename_map) : []
-            tuple(meta, report_both, report_either, counts_both, counts_either,
-                  nanostat_files, unbarcoded_report, sample_map)
-        }
+    .join(lima_counts_ch)
+    .join(lima_summary_ch)   // ← join summary_both here
+    .map { meta, report_both, report_either, counts_both, counts_either, summary_both ->
+        tuple(meta.pool_ID, meta, report_both, report_either, counts_both, counts_either, summary_both)
+    }
+    .join(nanostat_by_pool_ch)
+    .join(nanostat_unbarcoded_ch)
+    .map { pool_id, meta, report_both, report_either, counts_both, counts_either,
+           summary_both, nanostat_files, unbarcoded_report ->
+        def sample_map = params.rename_map ? file(params.rename_map) : []
+        tuple(meta, report_both, report_either, counts_both, counts_either,
+              summary_both, nanostat_files, unbarcoded_report, sample_map)
+    }
 
     DEMUX_QC(merge_demux_input_ch)
 

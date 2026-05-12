@@ -45,7 +45,7 @@ All docker containers used in this pipeline are publicly available.
 
 ## Conda Environment
 
-The conda environment is defined in `environment-pipeline.yml` and will be built automatically if the pipeline is run with `-profile conda`.
+The conda environment is defined in `environment-pipeline.yml` and will be built automatically if the pipeline is run with `-profile conda`. Note that this profile is only supported on Linux systems, as **lima (v2.13.0)** is only available for Linux.
 
 # How to run the pipeline:
 
@@ -85,8 +85,9 @@ If not provided, output files and all summary tables will use `pool_ID.well_ID` 
 
 There are two required columns:
 
-- *pool_ID.well_ID*: The default sample identifier in the format `pool_ID.well_ID` (e.g. `bc1015.A01`).
-- *sample_ID*: The desired output sample name (e.g. `bc1015.sample1`).
+- *pool_ID.well_ID*: The default sample identifier in the format `pool_ID.well_ID` (e.g. `bc1015.A01`). 
+   The formatting is strict — the pool ID and well ID must be joined with a `.` (not `_` or any other character). The well ID must follow the format of a letter `A–H` followed by a **two-digit** number (e.g. A01, B12); single-digit row numbers must be zero-padded (e.g. `A1` is invalid, use `A01`).
+- *sample_ID*: The desired output sample name (e.g. `bc1015.sample1`). Unlike `pool_ID.well_ID`, underscores (_) are accepted as connectors within the sample name (e.g. `bc1015_sample1` is also valid).
 
 Example (`tests/sample_map.csv`):
 
@@ -144,7 +145,7 @@ nextflow run \
     --output "${PWD}/test_output" \
     -with-report \
     -with-trace \
-    -resume
+    -resume -bg
 ```
 
 The pipeline can be run using included test data with BAM and FASTQ file renaming:
@@ -159,7 +160,7 @@ nextflow run \
     --rename_map "${PWD}/tests/sample_map.csv" \
     -with-report \
     -with-trace \
-    -resume
+    -resume -bg
 ```
 
 ## With Conda
@@ -173,7 +174,7 @@ nextflow run \
     --output "${PWD}/test_output" \
     -with-report \
     -with-trace \
-    -resume
+    -resume -bg
 ```
 
 ## Expected Outputs
@@ -208,8 +209,8 @@ test_output/
 │   │   ├── bc1015.[BARCODE_WELL/sample_ID].fastq.gz         # Merged FASTQ file for specific barcode well; sample_ID is used if rename_map is provided, otherwise barcode_well is used (e.g. bc1015.A01)
 │   │   └── ...
 │   └── demux_qc/
-│   │   ├── bc1015_per_barcode_qc_report.csv                           # Per-barcode QC report for pool bc1015
-│   │   └── bc1015_per_pool_qc_report.csv                          # Per-pool QC report for pool bc1015
+│   │   ├── bc1015_per_barcode_qc_report.csv                 # Per-barcode QC report for pool bc1015
+│   │   └── bc1015_per_pool_qc_report.csv                    # Per-pool QC report for pool bc1015
 |   └── multiqc/
 |       └── bc1015_multiqc_report.html                       # MultiQC report including NanoStat results
 └── logs/
@@ -227,7 +228,7 @@ One row per well. Rows with no HiFi yield (bleed-through barcodes with negligibl
 | Column | Description |
 |---|---|
 | `Sample_Name` | User-defined sample name from `rename_map`, or `pool_ID.well_ID` if not provided |
-| `Barcode` | Original `pool_ID.well_ID` key (e.g. `bc1015.A01`) — always the well identifier regardless of renaming |
+| `Barcode` | Original `pool_ID.well_ID` key (e.g. `bc1015.A01`): always the well identifier regardless of renaming |
 | `Barcode_Quality` | Mean `ScoreCombined` from both `.lima.report` files across all reads assigned to this well |
 | `HiFi_Reads_count` | Total reads assigned to this well: both-end reads plus either-end reads (P5-only and P7-only rows summed per well) |
 | `Mean_HiFi_Read_Length` | Mean read length from NanoStat on the merged BAM for this well |

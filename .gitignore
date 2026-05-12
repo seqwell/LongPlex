@@ -13,3 +13,7 @@ test_output_renamed/
 README.html
 old
 temp
+**/old_working
+old_working
+tests/subset.bam
+**/new_not_right
