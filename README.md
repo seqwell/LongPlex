@@ -223,8 +223,7 @@ test_output/
 
 ### Per-well stats table (`{pool_ID}/demux_qc/{pool_ID}_per_barcode_qc_report.csv`)
 
-One row per well. Rows with no HiFi yield (bleed-through barcodes with negligible reads) are excluded.
-
+One row per well. 
 | Column | Description |
 |---|---|
 | `Sample_Name` | User-defined sample name from `rename_map`, or `pool_ID.well_ID` if not provided |
