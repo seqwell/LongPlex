@@ -27,6 +27,16 @@
                     "fa_icon": "fas fa-folder-open",
                     "format": "directory-path",
                     "type": "string"
+                },
+                "rename_map": {
+                    "description": "Optional CSV file mapping pool_ID.well_ID keys to user-defined sample names.",
+                    "fa_icon": "fas fa-file-csv",
+                    "format": "file-path",
+                    "help_text": "CSV with two columns: 'pool_ID.well_ID' and 'sample_ID'. Each key must follow the format <pool_ID>.<well_ID> where well_ID is [A-H][0-9]{2} (e.g. bc1015.A01). When multiple pools are present, entries for all pools may be included; each pool filters to its own entries by pool_ID prefix. The Barcode column always retains the original pool_ID.well_ID key.",
+                    "mimetype": "text/csv",
+                    "pattern": "^\\S+\\.(csv)$",
+                    "schema": "schemas/rename_map_schema.json",
+                    "type": "string"
                 }
             },
             "required": [

@@ -12,3 +12,9 @@ test_output_renamed/
 # Other
 README.html
 old
+temp
+**/old_working
+old_working
+tests/subset.bam
+**/new_not_right
+nextflow_schema.json_old

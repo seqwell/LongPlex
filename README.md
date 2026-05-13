@@ -1,6 +1,6 @@
 # seqWell LongPlex Demultiplex Nextflow Pipeline
 
-[![CI](https://github.com/seqwell/LongPlex/actions/workflows/nextflow-tests.yml/badge.svg?branch=main)](https://github.com/seqwell/LongPlex/actions/workflows/nextflow-tests.yml?query=branch%3Amain)
+[![Nextflow Workflow Tests](https://github.com/seqwell/LongPlex/actions/workflows/nextflow-tests.yml/badge.svg?branch=main)](https://github.com/seqwell/LongPlex/actions/workflows/nextflow-tests.yml?query=branch%3Amain)
 [![Nextflow](https://img.shields.io/badge/Nextflow%20DSL2-%E2%89%A523.11-blue.svg)](https://www.nextflow.io/)
 
 This is the Nextflow pipeline to demultiplex PacBio HiFi data for the seqWell LongPlex Long Fragment Multiplexing Kit.
@@ -12,12 +12,15 @@ The pipeline starts with HiFi BAM files and has the following steps:
    This setting will demultiplex reads with both an i7 and i5 seqWell barcode sequence.
 2. The `LIST_HYBRIDS` and `REMOVE_HYBRIDS` processes identify and remove any reads with mismatched i7 and i5 seqWell barcode sequences in the remaining non-demultiplexed reads.
 3. The second Lima process, `LIMA_EITHER_END`, demultiplexes reads with only an i7 or i5 seqWell barcode sequence.
-4. The BAM files for each sample within each pool are merged in the `MERGE_READS` process and FASTQ files are created.
+4. The BAM files for each sample within each pool are merged in the `MERGE_READS` process and merged FASTQ files and bam files are created.
 5. The `DEMUX_STATS` process generates a summary of the demultiplexing steps.
 6. If a `rename_map` is provided, the `RENAME_DEMUX_STATS` process renames the sample identifiers in the demultiplexing summary to match the user-defined sample names.
 7. `NANOSTAT` and `MULTIQC` are used to generate summary metrics for the reads assigned to each sample in the pool.
+8. `NANOSTAT_UNBARCODED` generates sequencing metrics for the unbarcoded reads remaining after both lima steps.
+   Because the unbarcoded BAM is unaligned, reads are first converted to FASTQ via pysam before being passed to NanoStat.
+9. `DEMUX_QC` combines lima barcode statistics, per-sample NanoStat results, and unbarcoded NanoStat results into two final output tables per pool: a per-well stats table and a per-pool summary table.
 
-The final output from this pipeline includes Lima output files, demultiplexed BAM and FASTQ files, a demultiplexing summary, and a MultiQC report collating NanoStat results.
+The final output from this pipeline includes Lima output files, demultiplexed BAM and FASTQ files, a demultiplexing summary, a MultiQC report collating NanoStat results, and comprehensive per-pool and per-well demux statistics.
 
 ![Fig1. LongPlex Workflow](./docs/LongPlex_Workflow.png)
 
@@ -32,15 +35,17 @@ All docker containers used in this pipeline are publicly available.
 
 - *lima*: quay.io/biocontainers/lima:2.13.0--h9ee0642_0
 - *samtools*: quay.io/biocontainers/samtools:1.19.2--h50ea8bc_1
-- *longplexpy*: seqwell/longplexpy:latest
+- *longplexpy*: seqwell/longplexpy:0.2.1
+- *picard*: quay.io/biocontainers/picard:3.2.0--hdfd78af_0
 - *R*: rocker/verse:4.3.1
 - *nanostat*: quay.io/biocontainers/nanostat:1.6.0--pyhdfd78af_0
 - *multiqc*: quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
-- *python*: python:3.12-slim-bookworm
+- *python*: python:3.12-bookworm
+- *pandas*: quay.io/biocontainers/pandas:1.5.2
 
 ## Conda Environment
 
-The conda environment is defined in `environment-pipeline.yml` and will be built automatically if the pipeline is run with `-profile conda`.
+The conda environment is defined in `environment-pipeline.yml` and will be built automatically if the pipeline is run with `-profile conda`. Note that this profile is only supported on Linux systems, as **lima (v2.13.0)** is only available for Linux.
 
 # How to run the pipeline:
 
@@ -75,13 +80,14 @@ If it is an AWS S3 URI, please make sure to [set your security credentials appro
 
 ### `rename_map`
 
-`rename_map` is the path to a CSV file used to rename output BAM and FASTQ files, as well as the sample identifiers in the demultiplexing summary.
-If not provided, output files and demultiplexing summary will use `pool_ID.well_ID` as the default sample identifier.
+`rename_map` is the path to a CSV file used to rename output BAM and FASTQ files, as well as the sample identifiers in the demultiplexing summary and the `DEMUX_QC` output tables.
+If not provided, output files and all summary tables will use `pool_ID.well_ID` as the default sample identifier.
 
 There are two required columns:
 
-- *pool_ID.well_ID*: The default sample identifier in the format `pool_ID.well_ID` (e.g. `bc1015.A01`).
-- *sample_ID*: The desired output sample name (e.g. `bc1015.sample1`).
+- *pool_ID.well_ID*: The default sample identifier in the format `pool_ID.well_ID` (e.g. `bc1015.A01`). 
+   The formatting is strict — the pool ID and well ID must be joined with a `.` (not `_` or any other character). The well ID must follow the format of a letter `A–H` followed by a **two-digit** number (e.g. A01, B12); single-digit row numbers must be zero-padded (e.g. `A1` is invalid, use `A01`).
+- *sample_ID*: The desired output sample name (e.g. `bc1015.sample1`). Unlike `pool_ID.well_ID`, underscores (_) are accepted as connectors within the sample name (e.g. `bc1015_sample1` is also valid).
 
 Example (`tests/sample_map.csv`):
 
@@ -95,7 +101,12 @@ Example (`tests/sample_map.csv`):
 | bc1015.B03    | bc1015.sample6  |
 | bc1015.C01    | bc1015.sample7  |
 
-When `rename_map` is provided, the `RENAME_DEMUX_STATS` process will also produce a renamed version of the demultiplexing summary CSV with the user-defined sample names applied.
+When `rename_map` is provided:
+- The `RENAME_DEMUX_STATS` process produces a renamed version of the demultiplexing summary CSV with the user-defined sample names applied.
+- The `DEMUX_QC` process uses the map to populate the `Sample_Name` column in the per-well stats table.
+  The `Barcode` column always retains the original `pool_ID.well_ID` key (e.g. `bc1015.A01`) regardless of renaming.
+- When multiple pools are present in the `pool_sheet`, the `rename_map` may contain entries for all pools.
+  Each pool's `DEMUX_QC` run will automatically filter the map to only its own entries using the `pool_ID` prefix, ensuring no cross-pool mixing.
 
 ## Profiles:
 
@@ -134,7 +145,7 @@ nextflow run \
     --output "${PWD}/test_output" \
     -with-report \
     -with-trace \
-    -resume
+    -resume -bg
 ```
 
 The pipeline can be run using included test data with BAM and FASTQ file renaming:
@@ -149,7 +160,7 @@ nextflow run \
     --rename_map "${PWD}/tests/sample_map.csv" \
     -with-report \
     -with-trace \
-    -resume
+    -resume -bg
 ```
 
 ## With Conda
@@ -163,7 +174,7 @@ nextflow run \
     --output "${PWD}/test_output" \
     -with-report \
     -with-trace \
-    -resume
+    -resume -bg
 ```
 
 ## Expected Outputs
@@ -194,14 +205,51 @@ test_output/
 │   ├── merged_bam/
 │   │   ├── bc1015.[BARCODE_WELL/sample_ID].bam              # Merged BAM file for specific barcode well; sample_ID is used if rename_map is provided, otherwise barcode_well is used (e.g. bc1015.A01)
 │   │   └── ...
-│   └── merged_fastq/
-│       ├── bc1015.[BARCODE_WELL/sample_ID].fastq.gz         # Merged FASTQ file for specific barcode well; sample_ID is used if rename_map is provided, otherwise barcode_well is used (e.g. bc1015.A01)
-│       └── ...
-├── logs/
-│   ├── execution_report_[DATE-TIME-STAMP].html              # Nextflow execution report
-│   ├── execution_timeline_[DATE-TIME-STAMP].html            # Nextflow execution timeline
-│   ├── execution_trace_[DATE-TIME-STAMP].txt                # Nextflow execution trace
-│   └── pipeline_dag_[DATE-TIME-STAMP].html                  # Nextflow pipeline DAG
-└── multiqc/
-    └── [DATE-TIME-STAMP]_multiqc_report.html                # MultiQC report including NanoStat results
+│   ├── merged_fastq/
+│   │   ├── bc1015.[BARCODE_WELL/sample_ID].fastq.gz         # Merged FASTQ file for specific barcode well; sample_ID is used if rename_map is provided, otherwise barcode_well is used (e.g. bc1015.A01)
+│   │   └── ...
+│   └── demux_qc/
+│   │   ├── bc1015_per_barcode_qc_report.csv                 # Per-barcode QC report for pool bc1015
+│   │   └── bc1015_per_pool_qc_report.csv                    # Per-pool QC report for pool bc1015
+|   └── multiqc/
+|       └── bc1015_multiqc_report.html                       # MultiQC report including NanoStat results
+└── logs/
+    ├── execution_report_[DATE-TIME-STAMP].html              # Nextflow execution report
+    ├── execution_timeline_[DATE-TIME-STAMP].html            # Nextflow execution timeline
+    ├── execution_trace_[DATE-TIME-STAMP].txt                # Nextflow execution trace
+    └── pipeline_dag_[DATE-TIME-STAMP].html                  # Nextflow pipeline DAG
+
 ```
+
+### Per-well stats table (`{pool_ID}/demux_qc/{pool_ID}_per_barcode_qc_report.csv`)
+
+One row per well. Rows with no HiFi yield (bleed-through barcodes with negligible reads) are excluded.
+
+| Column | Description |
+|---|---|
+| `Sample_Name` | User-defined sample name from `rename_map`, or `pool_ID.well_ID` if not provided |
+| `Barcode` | Original `pool_ID.well_ID` key (e.g. `bc1015.A01`): always the well identifier regardless of renaming |
+| `Barcode_Quality` | Mean `ScoreCombined` from both `.lima.report` files across all reads assigned to this well |
+| `HiFi_Reads_count` | Total reads assigned to this well: both-end reads plus either-end reads (P5-only and P7-only rows summed per well) |
+| `Mean_HiFi_Read_Length` | Mean read length from NanoStat on the merged BAM for this well |
+| `Median_HiFi_Read_Quality` | Median read quality (QV) from NanoStat on the merged BAM for this well |
+| `HiFi_Yield` | Total bases from NanoStat on the merged BAM for this well |
+
+### Per-pool summary table (`{pool_ID}/demux_qc/{pool_ID}_per_pool_qc_report.csv`)
+
+One summary table per pool covering the full run.
+
+| Metric | Description |
+|---|---|
+| Unique Barcodes | Number of wells with assigned reads and non-zero yield |
+| Barcoded HiFi Reads | Total reads assigned to any barcode across both lima steps |
+| Unbarcoded HiFi Reads | Reads not assigned after both lima steps (from lima counts) |
+| Barcoded HiFi Reads (%) | Fraction of total reads that are barcoded |
+| Barcoded HiFi Yield (Gb) | Total bases across all barcoded wells |
+| Unbarcoded HiFi Yield (Gb) | Total bases in the unbarcoded BAM from `NANOSTAT_UNBARCODED` |
+| Barcoded HiFi Yield (%) | Fraction of total yield that is barcoded |
+| Mean HiFi Reads per Barcode | Mean read count across all wells |
+| Max HiFi Reads per Barcode | Highest read count across all wells |
+| Min HiFi Reads per Barcode | Lowest read count across all wells |
+| Barcoded HiFi Read Length (mean, kb) | Weighted mean read length across all barcoded wells |
+| Unbarcoded HiFi Read Length (mean, kb) | Mean read length from `NANOSTAT_UNBARCODED` |

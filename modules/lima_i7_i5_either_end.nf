@@ -9,6 +9,7 @@ process LIMA_EITHER_END {
     tuple val(meta), path("demux_either_i7_i5/*lima.counts"), emit: counts
     tuple val(meta), path("demux_either_i7_i5/*lima.summary"), emit: summary
     tuple val(meta), path("demux_either_i7_i5/*unbarcoded.bam"), emit: bam_unbarcoded
+    tuple val(meta), path("demux_either_i7_i5/*lima.report"), emit: report
 
     script:
     """
@@ -31,5 +32,6 @@ process LIMA_EITHER_END {
 
     mv demux_either_i7_i5/${meta.pool_ID}.lima.counts demux_either_i7_i5/i7_5_${meta.pool_ID}.lima.counts
     mv demux_either_i7_i5/${meta.pool_ID}.lima.summary demux_either_i7_i5/i7_5_${meta.pool_ID}.lima.summary
+    mv demux_either_i7_i5/${meta.pool_ID}.lima.report demux_either_i7_i5/i7_5_${meta.pool_ID}.lima.report
     """
 }

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+t#!/usr/bin/env bash
 
 nextflow run \
     -profile docker \
