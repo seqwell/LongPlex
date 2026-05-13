@@ -25,17 +25,14 @@ workflow {
     def pools_ch = Channel.fromList(samplesheetToList(params.pool_sheet, "schemas/input_schema.json"))
 
     def rename_maps = [:]
-    if (params.rename_map) {
-        file(params.rename_map)
-            .readLines()
-            .drop(1)
-            .each { line ->
-                def parts = line.trim().split(",")
-                if (parts.size() == 2) {
-                    rename_maps[parts[0].trim()] = parts[1].trim()
-                }
-            }
+   
+     
+     if (params.rename_map) {
+    def rename_rows = samplesheetToList(params.rename_map, "schemas/rename_map_schema.json")
+        rename_rows.each { row ->
+        rename_maps[row[0]] = row[1]
     }
+     }
     log.info "Rename maps: ${rename_maps}"
 
     LIMA_BOTH_END(pools_ch)
