@@ -26,7 +26,7 @@ The final output from this pipeline includes Lima output files, demultiplexed BA
 
 ## Dependencies
 
-This pipeline requires installation of [Nextflow](https://www.nextflow.io/docs/latest/install.html).
+This pipeline requires installation of [Nextflow](https://www.nextflow.io/docs/latest/install.html) version 22.04.5 through 25.10.4. This pipeline is not compatible with Nextflow 26.04.0 and later.
 It also requires installation of either a containerization platform such as [Docker](https://docs.docker.com/engine/install/) or a package manager such as [conda/mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html).
 
 ## Docker Containers
