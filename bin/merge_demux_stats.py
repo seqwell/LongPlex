@@ -406,15 +406,22 @@ def main():
         print("[info] No sample map — Sample_Name defaults to pool_well_key", file=sys.stderr)
 
     # ── 4. NanoStat per well — filter to this pool only ──────────────────────
-    pool_nanostat = [
+    if sample_to_well:
+        pool_nanostat = [
         f for f in args.nanostat
-        if Path(f).name.startswith(pool_id + ".")
-        or Path(f).name.startswith(pool_id + "_")
+        if (
+            Path(f).stem.replace("_nanostat", "").strip() in sample_to_well
+            or Path(f).stem.replace("_nanostat", "").strip().split(".")[-1] in sample_to_well
+            or Path(f).stem.replace("_nanostat", "").strip() == f"{pool_id}.{extract_well(Path(f).stem)}"
+        )
     ]
-    if not pool_nanostat:
-        print(f"[WARN] No NanoStat files matched pool {pool_id} — using all files",
-              file=sys.stderr)
-        pool_nanostat = args.nanostat
+    else:
+    # No sample map — files are named bc1015.A01_nanostat.txt, filter by pool prefix
+        pool_nanostat = [
+            f for f in args.nanostat
+            if Path(f).name.startswith(pool_id + ".")
+            or Path(f).name.startswith(pool_id + "_")
+    ]
 
     print(f"[debug] NanoStat files for pool {pool_id}: "
           f"{[Path(f).name for f in pool_nanostat]}", file=sys.stderr)
