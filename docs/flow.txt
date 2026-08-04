@@ -32,8 +32,13 @@ digraph workflow {
     MERGE_READS -> NANOSTAT;
     NANOSTAT -> MULTIQC;
 
+    // Docker-only path (main.nf); skipped by main_conda.nf
+    CREATE_XML [style="rounded,filled,dashed", fillcolor="#cfe2f3", color="#6c8ebf"];
+    MERGE_READS -> CREATE_XML [style=dashed];
+
     // Compact column grouping
     { rank=same; LIST_HYBRIDS; REMOVE_HYBRIDS }
     { rank=same; DEMUX_STATS; LIMA_EITHER_END }
     { rank=same; NANOSTAT; MERGE_READS }
+    { rank=same; MULTIQC; CREATE_XML }
 }

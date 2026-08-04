@@ -13,7 +13,7 @@ include { NANOSTAT } from './modules/nanostat.nf'
 include { NANOSTAT_UNBARCODED } from './modules/nanostat_unbarcoded.nf'
 include { MULTIQC } from './modules/multiqc.nf'
 include { DEMUX_QC } from './modules/demux_qc.nf'
-include { CREATE_XML } from './modules/create_xml.nf'
+
 
 def infer_well(path) {
     def well_id = path.tokenize("_")[2]
@@ -140,17 +140,6 @@ MULTIQC(ch_multiqc_input)
     }
 
     DEMUX_QC(merge_demux_input_ch)
-    
-
-    
-    MERGE_READS.out.bam_w_index
-    .map { meta, bams -> tuple(meta.pool_ID, bams) }
-    .groupTuple(by: 0)
-    .map { pool_id, bams_list -> tuple([pool_ID: pool_id], bams_list.flatten()) }
-    .set { ch_grouped_by_pool }
-
-    CREATE_XML(ch_grouped_by_pool)
-        
 
     
 

@@ -13,16 +13,19 @@ The pipeline starts with HiFi BAM files and has the following steps:
 2. The `LIST_HYBRIDS` and `REMOVE_HYBRIDS` processes identify and remove any reads with mismatched i7 and i5 seqWell barcode sequences in the remaining non-demultiplexed reads.
 3. The second Lima process, `LIMA_EITHER_END`, demultiplexes reads with only an i7 or i5 seqWell barcode sequence.
 4. The BAM files for each sample within each pool are merged in the `MERGE_READS` process and merged FASTQ files and bam files are created.
-5. The `DEMUX_STATS` process generates a summary of the demultiplexing steps.
-6. If a `rename_map` is provided, the `RENAME_DEMUX_STATS` process renames the sample identifiers in the demultiplexing summary to match the user-defined sample names.
-7. `NANOSTAT` and `MULTIQC` are used to generate summary metrics for the reads assigned to each sample in the pool.
-8. `NANOSTAT_UNBARCODED` generates sequencing metrics for the unbarcoded reads remaining after both lima steps.
+5. The `CREATE_XML` process combines the indexed, merged BAMs for each pool into a single `ConsensusReadSet` XML file using PacBio SMRT Tools' `dataset create` CLI. This step only runs when the pipeline is executed with the default `main.nf` (docker); it is not available with `main_conda.nf`, since `dataset create` is only provided in the `seqwell/smrttools` docker image and is not installable via conda. See [Pipeline Entry Points](#pipeline-entry-points-mainnf-vs-main_condanf) below.
+6. The `DEMUX_STATS` process generates a summary of the demultiplexing steps.
+7. If a `rename_map` is provided, the `RENAME_DEMUX_STATS` process renames the sample identifiers in the demultiplexing summary to match the user-defined sample names.
+8. `NANOSTAT` and `MULTIQC` are used to generate summary metrics for the reads assigned to each sample in the pool.
+9. `NANOSTAT_UNBARCODED` generates sequencing metrics for the unbarcoded reads remaining after both lima steps.
    Because the unbarcoded BAM is unaligned, reads are first converted to FASTQ via pysam before being passed to NanoStat.
-9. `DEMUX_QC` combines lima barcode statistics, per-sample NanoStat results, and unbarcoded NanoStat results into two final output tables per pool: a per-well stats table and a per-pool summary table.
+10. `DEMUX_QC` combines lima barcode statistics, per-sample NanoStat results, and unbarcoded NanoStat results into two final output tables per pool: a per-well stats table and a per-pool summary table.
 
-The final output from this pipeline includes Lima output files, demultiplexed BAM and FASTQ files, a demultiplexing summary, a MultiQC report collating NanoStat results, and comprehensive per-pool and per-well demux statistics.
+The final output from this pipeline includes Lima output files, demultiplexed BAM and FASTQ files, a demultiplexing summary, a MultiQC report collating NanoStat results, comprehensive per-pool and per-well demux statistics, and — when run with `main.nf` (docker) — a combined `ConsensusReadSet` XML file per pool.
 
 ![Fig1. LongPlex Workflow](./docs/LongPlex_Workflow.png)
+
+*Dashed node: `CREATE_XML` only runs in the docker pipeline (`main.nf`); it is skipped when running `main_conda.nf`.*
 
 ## Dependencies
 
@@ -42,10 +45,20 @@ All docker containers used in this pipeline are publicly available.
 - *multiqc*: quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
 - *python*: python:3.12-bookworm
 - *pandas*: quay.io/biocontainers/pandas:1.5.2
+- *smrttools*: seqwell/smrttools:26.1.0 (docker-only; used by `CREATE_XML` to run PacBio SMRT Tools' `dataset create` CLI)
 
 ## Conda Environment
 
 The conda environment is defined in `environment-pipeline.yml` and will be built automatically if the pipeline is run with `-profile conda`. Note that this profile is only supported on Linux systems, as **lima (v2.13.0)** is only available for Linux.
+
+## Pipeline Entry Points: `main.nf` vs `main_conda.nf`
+
+This pipeline ships with two entry points:
+
+- **`main.nf`** (default): supports the `docker`, `apptainer`, and `singularity` profiles. This is the only entry point that includes the `CREATE_XML` step, since that step requires the `seqwell/smrttools` docker image.
+- **`main_conda.nf`**: used with `-profile conda`. This entry point is identical to `main.nf` except that it omits the `CREATE_XML` step, as SMRT Tools' `dataset create` CLI is not available via conda.
+
+Be sure to point `nextflow run` at the entry point that matches your chosen profile, e.g. `-profile docker main.nf` or `-profile conda main_conda.nf`.
 
 # How to run the pipeline:
 
@@ -114,8 +127,8 @@ Several profiles are available and can be selected with the `-profile` option at
 
 - `apptainer`
 - `aws`
-- `conda`
-- `docker`
+- `conda` (use with `main_conda.nf`; skips the `CREATE_XML` step)
+- `docker` (use with `main.nf`)
 - `singularity`
 
 ## Example Command
@@ -168,7 +181,7 @@ nextflow run \
 ```bash
 nextflow run \
     -profile conda \
-    main.nf \
+    main_conda.nf \
     -c nextflow.config \
     --pool_sheet "${PWD}/tests/pool_sheet.csv" \
     --output "${PWD}/test_output" \
@@ -208,11 +221,13 @@ test_output/
 │   ├── merged_fastq/
 │   │   ├── bc1015.[BARCODE_WELL/sample_ID].fastq.gz         # Merged FASTQ file for specific barcode well; sample_ID is used if rename_map is provided, otherwise barcode_well is used (e.g. bc1015.A01)
 │   │   └── ...
-│   └── demux_qc/
+│   ├── demux_qc/
 │   │   ├── bc1015_per_barcode_qc_report.csv                 # Per-barcode QC report for pool bc1015
 │   │   └── bc1015_per_pool_qc_report.csv                    # Per-pool QC report for pool bc1015
-|   └── multiqc/
-|       └── bc1015_multiqc_report.html                       # MultiQC report including NanoStat results
+│   ├── multiqc/
+│   │   └── bc1015_multiqc_report.html                       # MultiQC report including NanoStat results
+│   └── xml/
+│       └── bc1015.combined.consensusreadset.xml             # Combined ConsensusReadSet XML for pool bc1015 (docker/main.nf only)
 └── logs/
     ├── execution_report_[DATE-TIME-STAMP].html              # Nextflow execution report
     ├── execution_timeline_[DATE-TIME-STAMP].html            # Nextflow execution timeline
@@ -252,3 +267,4 @@ One summary table per pool covering the full run.
 | Min HiFi Reads per Barcode | Lowest read count across all wells |
 | Barcoded HiFi Read Length (mean, kb) | Weighted mean read length across all barcoded wells |
 | Unbarcoded HiFi Read Length (mean, kb) | Mean read length from `NANOSTAT_UNBARCODED` |
+
