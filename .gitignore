@@ -18,3 +18,7 @@ old_working
 tests/subset.bam
 **/new_not_right
 nextflow_schema.json_old
+dockers
+smrtlink_dockers
+bin/fix_rg_ids.py
+bin/fix_rg_ids.sh
