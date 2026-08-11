@@ -45,7 +45,7 @@ All docker containers used in this pipeline are publicly available.
 - *multiqc*: quay.io/biocontainers/multiqc:1.21--pyhdfd78af_0
 - *python*: python:3.12-bookworm
 - *pandas*: quay.io/biocontainers/pandas:1.5.2
-- *smrttools*: seqwell/smrttools:26.1.0 (docker-only; used by `CREATE_XML` to run PacBio SMRT Tools' `dataset create` CLI)
+- *smrttools*: seqwell/smrttools:26.1.0-slim (docker-only; used by `CREATE_XML` to run PacBio SMRT Tools' `dataset create` CLI)
 
 ## Conda Environment
 
