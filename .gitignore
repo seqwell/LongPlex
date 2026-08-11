@@ -20,5 +20,6 @@ tests/subset.bam
 nextflow_schema.json_old
 dockers
 smrtlink_dockers
+slim_smrtlink_dockers
 bin/fix_rg_ids.py
 bin/fix_rg_ids.sh
