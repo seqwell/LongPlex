@@ -9,7 +9,7 @@ process CREATE_XML {
     """
     create_combined_xml.py ${meta.pool_ID} ${bams}
 
-    sed -i -E 's#(ResourceId=")[^"]*/([^/"]+)"#\\1${params.output}/${meta.pool_ID}/\\2"#g' \\
+    sed -i -E 's#(ResourceId=")[^"]*/([^/"]+)"#\\1${params.output}/merged_bam/${meta.pool_ID}/\\2"#g' \\
     ${meta.pool_ID}.combined.consensusreadset.xml
     """
 }
