@@ -14,6 +14,7 @@ include { NANOSTAT_UNBARCODED } from './modules/nanostat_unbarcoded.nf'
 include { MULTIQC } from './modules/multiqc.nf'
 include { DEMUX_QC } from './modules/demux_qc.nf'
 include { CREATE_XML } from './modules/create_xml.nf'
+include { CREATE_SAMPLE_XML } from './modules/create_sample_xml.nf'
 
 def infer_well(path) {
     def well_id = path.tokenize("_")[2]
@@ -26,15 +27,52 @@ workflow {
     def pools_ch = Channel.fromList(samplesheetToList(params.pool_sheet, "schemas/input_schema.json"))
 
     def rename_maps = [:]
-   
-     
-     if (params.rename_map) {
-    def rename_rows = samplesheetToList(params.rename_map, "schemas/rename_map_schema.json")
+
+    if (params.rename_map) {
+        def rename_rows = samplesheetToList(
+            params.rename_map,
+            "schemas/rename_map_schema.json"
+        )
+
         rename_rows.each { row ->
-        rename_maps[row[0]] = row[1]
+            rename_maps[row[0].toString()] = row[1]?.toString()?.trim()
+        }
     }
-     }
-    log.info "Rename maps: ${rename_maps}"
+
+    if (params.create_sample_xml) {
+        if (!params.rename_map) {
+            error "--create_sample_xml requires --rename_map"
+        }
+
+        def assigned_samples = [:]
+
+        rename_maps.each { well_key, sample_id ->
+            def sample = sample_id?.toString()?.trim()
+
+            if (!sample) {
+                return
+            }
+
+            def key = well_key.toString()
+            def separator = key.lastIndexOf('.')
+
+            if (separator < 1) {
+                error "Invalid rename-map well identifier: '${key}'"
+            }
+
+            def pool_id = key.substring(0, separator)
+            def sample_key = "${pool_id}:${sample}".toString()
+
+            if (assigned_samples.containsKey(sample_key)) {
+                error "Duplicate sample assignment '${sample}' " +
+                    "in pool '${pool_id}': " +
+                    "${assigned_samples[sample_key]} and ${well_key}"
+            }
+
+            assigned_samples[sample_key] = well_key
+        }
+    }
+
 
     LIMA_BOTH_END(pools_ch)
     LIST_HYBRIDS(LIMA_BOTH_END.out.report)
@@ -60,7 +98,7 @@ workflow {
 
     def bams_by_well_named_ch = bams_by_well_ch
         .map { meta, bams ->
-            def key = "${meta.pool_ID}.${meta.well_ID}"
+            def key = "${meta.pool_ID}.${meta.well_ID}".toString()
             def sample = rename_maps[key]
             def new_meta = meta + [sample_ID: sample ?: key]
             tuple(new_meta, bams)
@@ -150,12 +188,31 @@ MULTIQC(ch_multiqc_input)
     .set { ch_grouped_by_pool }
 
     CREATE_XML(ch_grouped_by_pool)
-        
 
-    
+    if (params.create_sample_xml) {
+
+        def output_dir = file(params.output)
+            .toAbsolutePath()
+            .normalize()
+            .toString()
+
+        def assigned_sample_bams_ch =
+            MERGE_READS.out.bam_w_index
+                .filter { meta, bams ->
+                    def key = "${meta.pool_ID}.${meta.well_ID}".toString()
+
+                    rename_maps.containsKey(key) &&
+                        rename_maps[key]?.toString()?.trim()
+                }
+
+        CREATE_SAMPLE_XML(
+            assigned_sample_bams_ch,
+            Channel.value(output_dir)
+        )
+    }
 
     workflow.onComplete = {
-        println "Project output directory: ${workflow.projectDir}/${params.output}"
+        println "Project output directory: ${file(params.output).toAbsolutePath()}"
         println "Pipeline completed at: $workflow.complete"
         println "Pipeline completed time duration: $workflow.duration"
         println "Command line: $workflow.commandLine"

@@ -37,6 +37,13 @@
                     "pattern": "^\\S+\\.(csv)$",
                     "schema": "schemas/rename_map_schema.json",
                     "type": "string"
+                },
+                "create_sample_xml": {
+                    "description": "Generate individual ConsensusReadSet XML files for samples explicitly assigned in the rename map.",
+                    "help_text": "When enabled, creates one ConsensusReadSet XML per assigned sample in <output>/<pool_ID>/sample_datasets/. Requires --rename_map. Unassigned barcode wells are excluded. The existing combined ConsensusReadSet XML is still generated.",
+                    "fa_icon": "fas fa-file-code",
+                    "type": "boolean",
+                    "default": false
                 }
             },
             "required": [

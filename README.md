@@ -14,12 +14,13 @@ The pipeline starts with HiFi BAM files and has the following steps:
 3. The second Lima process, `LIMA_EITHER_END`, demultiplexes reads with only an i7 or i5 seqWell barcode sequence.
 4. The BAM files for each sample within each pool are merged in the `MERGE_READS` process and merged FASTQ files and bam files are created.
 5. The `CREATE_XML` process combines the indexed, merged BAMs for each pool into a single `ConsensusReadSet` XML file using the `pbcore` Python API. This step runs under both the `docker` and `conda` profiles.
-6. The `DEMUX_STATS` process generates a summary of the demultiplexing steps.
-7. If a `rename_map` is provided, the `RENAME_DEMUX_STATS` process renames the sample identifiers in the demultiplexing summary to match the user-defined sample names.
-8. `NANOSTAT` and `MULTIQC` are used to generate summary metrics for the reads assigned to each sample in the pool.
-9. `NANOSTAT_UNBARCODED` generates sequencing metrics for the unbarcoded reads remaining after both lima steps.
+6. When `--create_sample_xml true` is enabled, `CREATE_SAMPLE_XML` generates an individual `ConsensusReadSet` XML for each sample explicitly assigned in the rename map. Unassigned wells are excluded.
+7. The `DEMUX_STATS` process generates a summary of the demultiplexing steps.
+8. If a `rename_map` is provided, the `RENAME_DEMUX_STATS` process renames the sample identifiers in the demultiplexing summary to match the user-defined sample names.
+9. `NANOSTAT` and `MULTIQC` are used to generate summary metrics for the reads assigned to each sample in the pool.
+10. `NANOSTAT_UNBARCODED` generates sequencing metrics for the unbarcoded reads remaining after both lima steps.
    Because the unbarcoded BAM is unaligned, reads are first converted to FASTQ via pysam before being passed to NanoStat.
-10. `DEMUX_QC` combines lima barcode statistics, per-sample NanoStat results, and unbarcoded NanoStat results into two final output tables per pool: a per-well stats table and a per-pool summary table.
+11. `DEMUX_QC` combines lima barcode statistics, per-sample NanoStat results, and unbarcoded NanoStat results into two final output tables per pool: a per-well stats table and a per-pool summary table.
 
 The final output from this pipeline includes Lima output files, demultiplexed BAM and FASTQ files, a demultiplexing summary, a MultiQC report collating NanoStat results, comprehensive per-pool and per-well demux statistics, and a combined `ConsensusReadSet` XML file per pool.
 
@@ -119,6 +120,31 @@ When `rename_map` is provided:
 - When multiple pools are present in the `pool_sheet`, the `rename_map` may contain entries for all pools.
   Each pool's `DEMUX_QC` run will automatically filter the map to only its own entries using the `pool_ID` prefix, ensuring no cross-pool mixing.
 
+### Optional per-sample ConsensusReadSet XML generation
+
+LongPlex can optionally generate an individual PacBio ConsensusReadSet XML for each sample explicitly assigned in a rename map.
+
+Enable this feature by supplying both `--rename_map` and `--create_sample_xml true`:
+
+```bash
+nextflow run seqwell/LongPlex \
+    -profile singularity \
+    --pool_sheet pool_sheet.csv \
+    --rename_map rename_map.csv \
+    --output results \
+    --create_sample_xml true
+```
+
+The feature is disabled by default. Only wells explicitly assigned in the rename map receive individual ConsensusReadSet XML files. Unassigned wells are excluded from per-sample XML generation.
+
+The files are published to:
+
+`<output>/<pool_ID>/sample_datasets/<sample_ID>.consensusreadset.xml`
+
+Each XML references the corresponding merged BAM and its `.pbi` and `.bai` indexes in the pool's `merged_bam` directory.
+
+The existing combined ConsensusReadSet XML is still generated independently of this option.
+
 ## Example Command
 
 A minimal execution might look like:
@@ -205,6 +231,10 @@ test_output/
 │   │       └── i7_i5_bc1015.lima.summary                    # Summary of lima read filtering results
 │   ├── merged_bam/
 │   │   ├── bc1015.[BARCODE_WELL/sample_ID].bam              # Merged BAM file for specific barcode well; sample_ID is used if rename_map is provided, otherwise barcode_well is used (e.g. bc1015.A01)
+│   │   └── ...
+│   ├── sample_datasets/                                    # Only with --create_sample_xml true
+│   │   ├── bc1015.sample1.consensusreadset.xml
+│   │   ├── bc1015.sample2.consensusreadset.xml
 │   │   └── ...
 │   ├── merged_fastq/
 │   │   ├── bc1015.[BARCODE_WELL/sample_ID].fastq.gz         # Merged FASTQ file for specific barcode well; sample_ID is used if rename_map is provided, otherwise barcode_well is used (e.g. bc1015.A01)
