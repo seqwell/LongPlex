@@ -23,7 +23,7 @@ def infer_well(path) {
 workflow {
     validateParameters()
     log.info paramsSummaryLog(workflow)
-    def pools_ch = Channel.fromList(samplesheetToList(params.pool_sheet, "schemas/input_schema.json"))
+    def pools_ch = channel.fromList(samplesheetToList(params.pool_sheet, "schemas/input_schema.json"))
 
     def rename_maps = [:]
    
@@ -90,7 +90,7 @@ workflow {
     ch_multiqc_input = NANOSTAT.out.report
     .map { meta, report -> tuple(meta.pool_ID, meta, report) }
     .groupTuple(by: 0)
-    .map { pool_id, metas, reports ->
+    .map { pool_id, _metas, reports ->
         def pool_meta = [pool_ID: pool_id]
         tuple(pool_meta, reports.flatten())
     }
@@ -132,7 +132,7 @@ MULTIQC(ch_multiqc_input)
     }
     .join(nanostat_by_pool_ch)
     .join(nanostat_unbarcoded_ch)
-    .map { pool_id, meta, report_both, report_either, counts_both, counts_either,
+    .map { _pool_id, meta, report_both, report_either, counts_both, counts_either,
            summary_both, nanostat_files, unbarcoded_report ->
         def sample_map = params.rename_map ? file(params.rename_map) : []
         tuple(meta, report_both, report_either, counts_both, counts_either,

@@ -24,3 +24,5 @@ slim_smrtlink_dockers
 bin/fix_rg_ids.py
 bin/fix_rg_ids.sh
 docker
+
+tests/pool_sheet_pacbio.csv

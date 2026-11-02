@@ -11,7 +11,7 @@ process MERGE_READS {
 
     script:
     def id  = meta.sample_ID
-    def tag = "${meta.pool_ID}_${meta.sample_ID}"
+
     """
     samtools merge -@ ${task.cpus} ${id}.bam ${bams}
 
