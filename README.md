@@ -13,7 +13,7 @@ The pipeline starts with HiFi BAM files and has the following steps:
 2. The `LIST_HYBRIDS` and `REMOVE_HYBRIDS` processes identify and remove any reads with mismatched i7 and i5 seqWell barcode sequences in the remaining non-demultiplexed reads.
 3. The second Lima process, `LIMA_EITHER_END`, demultiplexes reads with only an i7 or i5 seqWell barcode sequence.
 4. The BAM files for each sample within each pool are merged in the `MERGE_READS` process and merged FASTQ files and bam files are created.
-5. The `CREATE_XML` process combines the indexed, merged BAMs for each pool into a single `ConsensusReadSet` XML file using the `pbcore` Python API. This step runs under both the `docker` and `conda` profiles.
+5. The `CREATE_XML` process combines the indexed, merged BAMs for each pool into a single `ConsensusReadSet` XML file using the `pbcore` Python API. This step runs under both the `docker` and `conda` profiles. If `--create_sample_xml true` is set, the same process is also run per sample (as `CREATE_SAMPLE_XML`) to write one `ConsensusReadSet` XML per merged (demultiplexed) BAM.
 6. The `DEMUX_STATS` process generates a summary of the demultiplexing steps.
 7. If a `rename_map` is provided, the `RENAME_DEMUX_STATS` process renames the sample identifiers in the demultiplexing summary to match the user-defined sample names.
 8. `NANOSTAT` and `MULTIQC` are used to generate summary metrics for the reads assigned to each sample in the pool.
@@ -88,6 +88,14 @@ The output directory path can be a local absolute path or an AWS S3 URI.
 If it is an AWS S3 URI, please make sure to [set your security credentials appropriately](https://www.nextflow.io/docs/latest/amazons3.html#security-credentials).
 
 ## Optional Parameters
+
+### `create_sample_xml`
+
+Optional boolean (default `false`). When set to `true`, a `ConsensusReadSet` XML is written for each merged BAM in addition to the combined per-pool XML. Files are written to `{pool_ID}/xml/per_sample/{sample_ID}.consensusreadset.xml`, and their `ResourceId` paths point to the published BAM and `.pbi` in `{pool_ID}/merged_bam/`, so they can be imported into SMRT Link individually.
+
+```bash
+--create_sample_xml true
+```
 
 ### `rename_map`
 
@@ -215,7 +223,10 @@ test_output/
 │   ├── multiqc/
 │   │   └── bc1015_multiqc_report.html                       # MultiQC report including NanoStat results
 │   └── xml/
-│       └── bc1015.combined.consensusreadset.xml             # Combined ConsensusReadSet XML for pool bc1015
+│       ├── bc1015.combined.consensusreadset.xml             # Combined ConsensusReadSet XML for pool bc1015
+│       └── per_sample/                                      # Only present if --create_sample_xml true
+│           ├── bc1015.[BARCODE_WELL/sample_ID].consensusreadset.xml  # Per-sample ConsensusReadSet XML pointing to the matching merged_bam/ BAM
+│           └── ...
 └── logs/
     ├── execution_report_[DATE-TIME-STAMP].html              # Nextflow execution report
     ├── execution_timeline_[DATE-TIME-STAMP].html            # Nextflow execution timeline

@@ -14,6 +14,7 @@ include { NANOSTAT_UNBARCODED } from './modules/nanostat_unbarcoded.nf'
 include { MULTIQC } from './modules/multiqc.nf'
 include { DEMUX_QC } from './modules/demux_qc.nf'
 include { CREATE_XML } from './modules/create_xml.nf'
+include { CREATE_XML as CREATE_SAMPLE_XML } from './modules/create_xml.nf'
 
 def infer_well(path) {
     def well_id = path.tokenize("_")[2]
@@ -29,12 +30,14 @@ workflow {
    
      
      if (params.rename_map) {
-    def rename_rows = samplesheetToList(params.rename_map, "schemas/rename_map_schema.json")
+        def rename_rows = samplesheetToList(params.rename_map, "schemas/rename_map_schema.json")
         rename_rows.each { row ->
-        rename_maps[row[0]] = row[1]
+            rename_maps[row[0]] = row[1]
+        }
+        log.info "Rename maps: ${rename_maps}"
+    } else {
+        log.info "No rename_map provided; using pool_ID.well_ID (e.g. bc1015.A01) as sample names"
     }
-     }
-    log.info "Rename maps: ${rename_maps}"
 
     LIMA_BOTH_END(pools_ch)
     LIST_HYBRIDS(LIMA_BOTH_END.out.report)
@@ -150,6 +153,13 @@ MULTIQC(ch_multiqc_input)
     .set { ch_grouped_by_pool }
 
     CREATE_XML(ch_grouped_by_pool)
+
+    // Optional: one ConsensusReadSet XML per demultiplexed (merged) BAM,
+    // reusing CREATE_XML (output prefix set via ext.prefix in nextflow.config)
+    def run_sample_xml = params.create_sample_xml.toString().toLowerCase() == 'true'
+    if (run_sample_xml) {
+        CREATE_SAMPLE_XML(MERGE_READS.out.bam_w_index)
+    }
         
 
     
