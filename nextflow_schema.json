@@ -37,6 +37,14 @@
                     "pattern": "^\\S+\\.(csv)$",
                     "schema": "schemas/rename_map_schema.json",
                     "type": "string"
+                },
+                "create_sample_xml": {
+                    "description": "Also write one ConsensusReadSet XML per demultiplexed (merged) BAM.",
+                    "fa_icon": "fas fa-file-code",
+                    "help_text": "Optional. When true, CREATE_SAMPLE_XML (an alias of CREATE_XML) writes <sample_ID>.consensusreadset.xml for every merged BAM to <output>/<pool_ID>/xml/per_sample/, with ResourceId paths pointing to <output>/<pool_ID>/merged_bam/. The combined per-pool XML is always produced.",
+                    "type": ["boolean", "string"],
+                    "enum": [true, false, "true", "false"],
+                    "default": false
                 }
             },
             "required": [
